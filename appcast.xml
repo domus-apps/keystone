@@ -76,5 +76,22 @@
         sparkle:edSignature="ZERLt7cU4ytAlMPLzzsPx0IODwjZ5VwQ/O3O+3N2gJSfY7P/Ys097GsoSNyS3z4jbF4WCZRK1mQzE+dZYIj0AQ==" length="2972578"
         type="application/octet-stream"/>
     </item>
+    <item>
+      <title>Keystone v1.0.4</title>
+      <link>https://github.com/domus-apps/keystone/releases/tag/v1.0.4</link>
+      <pubDate>Sat, 29 Aug 2026 03:05:03 +0000</pubDate>
+      <description><![CDATA[
+<h3>Changed</h3>
+<ul>
+<li>Raised the icon's arch: the keystone's narrow protrusion doesn't read as the glyph's top edge, so the ring itself is now what sits optically centered.</li>
+</ul>      ]]></description>
+      <sparkle:version>5</sparkle:version>
+      <sparkle:shortVersionString>1.0.4</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/keystone/releases/download/v1.0.4/Keystone.zip"
+        sparkle:edSignature="kcemgpGNLRGp4bYEl3Rr6tWRj/sXEZXm4Eo3LWNx0mbkmMYo+V1muAyQ989cay4gUSC5EMh4kRvfKu5+T3kOBQ==" length="2970699"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
