@@ -4,6 +4,12 @@ All notable changes to Keystone are documented here. The release workflow publis
 
 Keep each bullet on a single line: release notes render line breaks literally (both on GitHub and in the update dialog), so wrapped lines would break mid-sentence.
 
+## 1.0.7
+
+### Fixed
+
+- The icon's arch now declares a blur material like its siblings, keeping the frosted-glass treatment consistent across appearances.
+
 ## 1.0.6
 
 ### Fixed
