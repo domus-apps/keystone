@@ -5,5 +5,24 @@
   <channel>
     <title>Keystone</title>
     <link>https://github.com/domus-apps/keystone</link>
+    <item>
+      <title>Keystone v1.0.0</title>
+      <link>https://github.com/domus-apps/keystone/releases/tag/v1.0.0</link>
+      <pubDate>Sat, 29 Aug 2026 02:35:58 +0000</pubDate>
+      <description><![CDATA[
+<ul>
+<li>Initial release: Caps Lock rerouted to a spare function key (F19 by default, F13–F20 selectable) inside macOS's HID system — instant input-source switching with none of Caps Lock's built-in delay, and no process ever touching a keystroke.</li>
+<li>The mapping is re-asserted automatically after sleep and whenever a keyboard (re)connects, so Bluetooth keyboards can't shake it off.</li>
+<li>First-run onboarding walks through the one manual step: binding "Select next source in Input menu" to the rerouted key in System Settings.</li>
+<li>Menu bar toggle, Settings with launch at login and destination-key choice, and Sparkle auto-updates.</li>
+</ul>      ]]></description>
+      <sparkle:version>1</sparkle:version>
+      <sparkle:shortVersionString>1.0.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/keystone/releases/download/v1.0.0/Keystone.zip"
+        sparkle:edSignature="aaU23/ieSt6a0uiFxyE8OSOnB4U1rFlyjgCROQ6pNtVtJLQ7vsQTDW9/Hv+38h7NmPjYuOnOWuD0Uzb7CIFeBw==" length="2830986"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
