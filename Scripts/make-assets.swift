@@ -331,10 +331,11 @@ func makeIconLayer(_ draw: (CGContext) -> Void) -> NSBitmapImageRep {
 }
 
 func drawFlatArch(_ cg: CGContext) {
-    // Semi-transparent so the system's glass treatment lets the background
-    // glow through the flanks; the keystone in front stays the bright one.
+    // 0.4, the suite's alpha for translucent panes: against the dark
+    // variant's near-black fill, anything much higher reads as a solid
+    // slab instead of glass; the keystone in front stays the bright one.
     cg.addPath(archPath())
-    cg.setFillColor(color(0xFFFFFF, 0.76))
+    cg.setFillColor(color(0xFFFFFF, 0.4))
     cg.fillPath()
     drawArchJoints(cg, alpha: 0.2)
 }

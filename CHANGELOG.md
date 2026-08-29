@@ -4,6 +4,12 @@ All notable changes to Keystone are documented here. The release workflow publis
 
 Keep each bullet on a single line: release notes render line breaks literally (both on GitHub and in the update dialog), so wrapped lines would break mid-sentence.
 
+## 1.0.5
+
+### Fixed
+
+- The dark-mode app icon rendered the arch as a near-opaque slab; it now carries the suite's translucent-glass alpha and reads as frosted glass against the dark fill.
+
 ## 1.0.4
 
 ### Changed
