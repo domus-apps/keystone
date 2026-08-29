@@ -4,6 +4,12 @@ All notable changes to Keystone are documented here. The release workflow publis
 
 Keep each bullet on a single line: release notes render line breaks literally (both on GitHub and in the update dialog), so wrapped lines would break mid-sentence.
 
+## 1.0.4
+
+### Changed
+
+- Raised the icon's arch: the keystone's narrow protrusion doesn't read as the glyph's top edge, so the ring itself is now what sits optically centered.
+
 ## 1.0.3
 
 ### Changed
