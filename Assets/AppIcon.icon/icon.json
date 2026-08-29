@@ -1,0 +1,25 @@
+{
+  "fill" : {
+    "automatic-gradient" : "extended-srgb:0.96078,0.61961,0.13725,1.00000"
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "image-name" : "keystone.png",
+          "name" : "keystone"
+        },
+        {
+          "image-name" : "arch.png",
+          "name" : "arch"
+        }
+      ]
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
