@@ -127,5 +127,22 @@
         sparkle:edSignature="kPq2MoSo33IxFfvHyt6ssnpUc0yBqwaoNQGdytyxrRu3X4QK48dRNPgv9Xhbwjg9lC35lz2iMbKPwzn5B/PBCQ==" length="2937934"
         type="application/octet-stream"/>
     </item>
+    <item>
+      <title>Keystone v1.0.7</title>
+      <link>https://github.com/domus-apps/keystone/releases/tag/v1.0.7</link>
+      <pubDate>Sat, 29 Aug 2026 05:43:44 +0000</pubDate>
+      <description><![CDATA[
+<h3>Fixed</h3>
+<ul>
+<li>The icon's arch now declares a blur material like its siblings, keeping the frosted-glass treatment consistent across appearances.</li>
+</ul>      ]]></description>
+      <sparkle:version>8</sparkle:version>
+      <sparkle:shortVersionString>1.0.7</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/keystone/releases/download/v1.0.7/Keystone.zip"
+        sparkle:edSignature="Ee80DtGJZ3MBMOEQ+znjlob+9ypHrXrHmThjUCLf8V/TAERn/kZt0rFqI3rR95SQ9X8IkdfwvZ/3bpSf/EmEDQ==" length="2924264"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
