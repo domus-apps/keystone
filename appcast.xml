@@ -24,5 +24,22 @@
         sparkle:edSignature="aaU23/ieSt6a0uiFxyE8OSOnB4U1rFlyjgCROQ6pNtVtJLQ7vsQTDW9/Hv+38h7NmPjYuOnOWuD0Uzb7CIFeBw==" length="2830986"
         type="application/octet-stream"/>
     </item>
+    <item>
+      <title>Keystone v1.0.1</title>
+      <link>https://github.com/domus-apps/keystone/releases/tag/v1.0.1</link>
+      <pubDate>Sat, 29 Aug 2026 02:48:04 +0000</pubDate>
+      <description><![CDATA[
+<h3>Fixed</h3>
+<ul>
+<li>The Caps Lock mapping was installed on every HID service in the system, including the Apple vendor services that translate the keyboard's fn row into brightness/volume events — which silently broke those keys (and apps driven by them, such as Transom) until the mapping was cleared, even after quitting Keystone. The mapping is now scoped to actual keyboard services, and enabling, disabling, or re-asserting the remap first sweeps away the stray mappings older versions left behind.</li>
+</ul>      ]]></description>
+      <sparkle:version>2</sparkle:version>
+      <sparkle:shortVersionString>1.0.1</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/keystone/releases/download/v1.0.1/Keystone.zip"
+        sparkle:edSignature="OttxUpbRznkQ79j2i6IyxzrJq59JWvqWnuqoVxXQTLowohI0NUpn5P+O4nqiwU2XI0w+AqAqnz4bf52UWfXUAA==" length="2831572"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
