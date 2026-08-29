@@ -110,5 +110,22 @@
         sparkle:edSignature="BII12YcMNapQ84JejI/Un0a7sXHf5eiplfjA0z005AGfVMJbZrxrTyrPwG8kGGR7VJQB2+cctywbhw6KgNAxDA==" length="2889699"
         type="application/octet-stream"/>
     </item>
+    <item>
+      <title>Keystone v1.0.6</title>
+      <link>https://github.com/domus-apps/keystone/releases/tag/v1.0.6</link>
+      <pubDate>Sat, 29 Aug 2026 04:07:14 +0000</pubDate>
+      <description><![CDATA[
+<h3>Fixed</h3>
+<ul>
+<li>The dark-mode icon lost its glass entirely: the previous fix dimmed the arch image instead of declaring materials. The icon document now declares real Liquid Glass — specular highlights and a translucent frosted arch under the solid keystone — so every appearance keeps the glassy look.</li>
+</ul>      ]]></description>
+      <sparkle:version>7</sparkle:version>
+      <sparkle:shortVersionString>1.0.6</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/keystone/releases/download/v1.0.6/Keystone.zip"
+        sparkle:edSignature="kPq2MoSo33IxFfvHyt6ssnpUc0yBqwaoNQGdytyxrRu3X4QK48dRNPgv9Xhbwjg9lC35lz2iMbKPwzn5B/PBCQ==" length="2937934"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
