@@ -151,10 +151,12 @@ func drawGlassPane(
 // The glyph: a glass arch with a gap at the apex, and the keystone — the
 // bright hero pane — set into it, protruding a little past both faces the
 // way a real keystone does.
-/* Center height chosen so the glyph's vertical span (leg bottoms to the
-   keystone's top) sits 4px above true center — a slight optical lift, since
-   the bright keystone up top is where the eye lands. */
-let archCenter = CGPoint(x: 512, y: 444)
+/* Center height tuned optically, not to the bounding box: the keystone's
+   protrusion is too narrow to read as the glyph's top edge, so the eye
+   weighs the ring's apex against the leg bottoms. This height puts the
+   ring apex margin slightly tighter than the leg margin (the usual
+   optical lift), with the keystone poking beyond as an ornament. */
+let archCenter = CGPoint(x: 512, y: 460)
 let outerR: CGFloat = 258
 let innerR: CGFloat = 158
 let legDrop: CGFloat = 140
