@@ -4,6 +4,12 @@ All notable changes to Keystone are documented here. The release workflow publis
 
 Keep each bullet on a single line: release notes render line breaks literally (both on GitHub and in the update dialog), so wrapped lines would break mid-sentence.
 
+## 1.0.6
+
+### Fixed
+
+- The dark-mode icon lost its glass entirely: the previous fix dimmed the arch image instead of declaring materials. The icon document now declares real Liquid Glass — specular highlights and a translucent frosted arch under the solid keystone — so every appearance keeps the glassy look.
+
 ## 1.0.5
 
 ### Fixed

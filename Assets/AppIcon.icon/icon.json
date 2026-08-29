@@ -6,14 +6,34 @@
     {
       "layers" : [
         {
+          "glass" : true,
           "image-name" : "keystone.png",
           "name" : "keystone"
-        },
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "specular" : true
+    },
+    {
+      "layers" : [
         {
+          "glass" : true,
           "image-name" : "arch.png",
           "name" : "arch"
         }
-      ]
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "specular" : true,
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
     }
   ],
   "supported-platforms" : {

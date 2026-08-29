@@ -331,11 +331,13 @@ func makeIconLayer(_ draw: (CGContext) -> Void) -> NSBitmapImageRep {
 }
 
 func drawFlatArch(_ cg: CGContext) {
-    // 0.4, the suite's alpha for translucent panes: against the dark
-    // variant's near-black fill, anything much higher reads as a solid
-    // slab instead of glass; the keystone in front stays the bright one.
+    // Solid: the see-through comes from the icon document, not the image —
+    // the arch's group declares glass with translucency (icon.json), so the
+    // system renders it as frosted glass in every appearance. A translucent
+    // IMAGE instead would just dim into the dark variant's near-black fill
+    // with no glass treatment at all.
     cg.addPath(archPath())
-    cg.setFillColor(color(0xFFFFFF, 0.4))
+    cg.setFillColor(color(0xFFFFFF))
     cg.fillPath()
     drawArchJoints(cg, alpha: 0.2)
 }
