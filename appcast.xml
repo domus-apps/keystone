@@ -93,5 +93,22 @@
         sparkle:edSignature="kcemgpGNLRGp4bYEl3Rr6tWRj/sXEZXm4Eo3LWNx0mbkmMYo+V1muAyQ989cay4gUSC5EMh4kRvfKu5+T3kOBQ==" length="2970699"
         type="application/octet-stream"/>
     </item>
+    <item>
+      <title>Keystone v1.0.5</title>
+      <link>https://github.com/domus-apps/keystone/releases/tag/v1.0.5</link>
+      <pubDate>Sat, 29 Aug 2026 03:19:36 +0000</pubDate>
+      <description><![CDATA[
+<h3>Fixed</h3>
+<ul>
+<li>The dark-mode app icon rendered the arch as a near-opaque slab; it now carries the suite's translucent-glass alpha and reads as frosted glass against the dark fill.</li>
+</ul>      ]]></description>
+      <sparkle:version>6</sparkle:version>
+      <sparkle:shortVersionString>1.0.5</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/keystone/releases/download/v1.0.5/Keystone.zip"
+        sparkle:edSignature="BII12YcMNapQ84JejI/Un0a7sXHf5eiplfjA0z005AGfVMJbZrxrTyrPwG8kGGR7VJQB2+cctywbhw6KgNAxDA==" length="2889699"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
