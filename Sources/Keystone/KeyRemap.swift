@@ -34,4 +34,11 @@ enum KeyRemap {
 
     /// The argument that removes every user mapping, restoring Caps Lock.
     static let clearArgument = #"{"UserKeyMapping":[]}"#
+
+    /// `hidutil property --matching` filter restricting writes to actual
+    /// keyboards (Generic Desktop page, Keyboard usage). Without it the
+    /// mapping lands on every HID service in the system — including the
+    /// Apple vendor services that translate the fn row into brightness and
+    /// volume events, which a keyboard mapping visibly breaks.
+    static let keyboardMatchingArgument = #"{"PrimaryUsagePage":1,"PrimaryUsage":6}"#
 }

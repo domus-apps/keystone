@@ -32,6 +32,14 @@ import Testing
     #expect(mappings.isEmpty)
 }
 
+@Test func keyboardMatchingTargetsTheKeyboardUsagePair() throws {
+    let object =
+        try JSONSerialization.jsonObject(with: Data(KeyRemap.keyboardMatchingArgument.utf8))
+        as? [String: Int]
+    #expect(object?["PrimaryUsagePage"] == 1)
+    #expect(object?["PrimaryUsage"] == 6)
+}
+
 @Test func titlesReadAsFunctionKeys() {
     #expect(KeyRemap.FunctionKey.f19.title == "F19")
     #expect(KeyRemap.FunctionKey.allCases.count == 8)

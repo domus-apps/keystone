@@ -19,25 +19,38 @@ final class RemapEngine {
     private var matchedIterator: io_iterator_t = 0
 
     func apply(_ key: KeyRemap.FunctionKey) {
-        run(KeyRemap.mappingArgument(to: key))
+        /* Sweep everything first: 1.0.0 (and hand-run hidutil) installed
+           the mapping on every HID service, media-key translators included;
+           the unscoped clear removes those leftovers on upgrade before the
+           properly scoped mapping goes in. Cheap and idempotent, so it's
+           safe to repeat on every re-assert. */
+        run(KeyRemap.clearArgument, matching: nil)
+        run(KeyRemap.mappingArgument(to: key), matching: KeyRemap.keyboardMatchingArgument)
     }
 
     func clear() {
-        run(KeyRemap.clearArgument)
+        /* Unscoped on purpose, for the same leftover-sweeping reason. */
+        run(KeyRemap.clearArgument, matching: nil)
     }
 
-    private func run(_ mapping: String) {
+    /* Synchronous (hidutil returns in a few ms): apply() relies on the
+       sweep landing before the scoped set. */
+    private func run(_ mapping: String, matching: String?) {
         let hidutil = Process()
         hidutil.executableURL = URL(fileURLWithPath: "/usr/bin/hidutil")
-        hidutil.arguments = ["property", "--set", mapping]
-        hidutil.standardOutput = FileHandle.nullDevice
-        hidutil.terminationHandler = { process in
-            if process.terminationStatus != 0 {
-                NSLog("Keystone: hidutil exited with \(process.terminationStatus)")
-            }
+        var arguments = ["property"]
+        if let matching {
+            arguments += ["--matching", matching]
         }
+        arguments += ["--set", mapping]
+        hidutil.arguments = arguments
+        hidutil.standardOutput = FileHandle.nullDevice
         do {
             try hidutil.run()
+            hidutil.waitUntilExit()
+            if hidutil.terminationStatus != 0 {
+                NSLog("Keystone: hidutil exited with \(hidutil.terminationStatus)")
+            }
         } catch {
             NSLog("Keystone: failed to launch hidutil: \(error)")
         }
