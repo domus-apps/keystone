@@ -41,5 +41,22 @@
         sparkle:edSignature="OttxUpbRznkQ79j2i6IyxzrJq59JWvqWnuqoVxXQTLowohI0NUpn5P+O4nqiwU2XI0w+AqAqnz4bf52UWfXUAA==" length="2831572"
         type="application/octet-stream"/>
     </item>
+    <item>
+      <title>Keystone v1.0.2</title>
+      <link>https://github.com/domus-apps/keystone/releases/tag/v1.0.2</link>
+      <pubDate>Sat, 29 Aug 2026 02:54:38 +0000</pubDate>
+      <description><![CDATA[
+<h3>Changed</h3>
+<ul>
+<li>Quitting Keystone now clears the mapping and returns Caps Lock to stock macOS behavior — the remap is active exactly while the app runs, so what you see in the menu bar is the whole story. Launch at login keeps switching seamless across restarts. (A force-quit can't clean up after itself; the next launch, toggle, or reboot does.)</li>
+</ul>      ]]></description>
+      <sparkle:version>3</sparkle:version>
+      <sparkle:shortVersionString>1.0.2</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/keystone/releases/download/v1.0.2/Keystone.zip"
+        sparkle:edSignature="jUOsyaEex6SHsLDrRFUMgeWsT6BtK4wDkFA5KAk9Q6dLFyEtKwSduyeDLyp31Qvgtz5uuO2JOOfo7cQY7CE2Dg==" length="2833145"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
