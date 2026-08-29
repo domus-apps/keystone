@@ -4,6 +4,12 @@ All notable changes to Keystone are documented here. The release workflow publis
 
 Keep each bullet on a single line: release notes render line breaks literally (both on GitHub and in the update dialog), so wrapped lines would break mid-sentence.
 
+## 1.0.2
+
+### Changed
+
+- Quitting Keystone now clears the mapping and returns Caps Lock to stock macOS behavior — the remap is active exactly while the app runs, so what you see in the menu bar is the whole story. Launch at login keeps switching seamless across restarts. (A force-quit can't clean up after itself; the next launch, toggle, or reboot does.)
+
 ## 1.0.1
 
 ### Fixed

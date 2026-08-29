@@ -302,7 +302,8 @@ final class GeneralPaneViewController: NSViewController {
         views.append(remapRow)
         views.append(note(
             "The remap lives in macOS's HID system — instant, and no process touches "
-                + "your keystrokes. Turning it off restores stock Caps Lock immediately."))
+                + "your keystrokes. Turning it off, or quitting Keystone, restores "
+                + "stock Caps Lock immediately."))
 
         let shortcutNote = note(
             "For delay-free input switching, bind the shortcut to the same key: "

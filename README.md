@@ -46,6 +46,8 @@ swift run                # menu bar app, dev build
 
 ## Notes
 
-- The mapping persists until reboot even if Keystone quits; the app (with launch at
-  login) exists to re-apply it and to give the trick an on/off switch.
-- Turning the remap off restores stock Caps Lock immediately.
+- The remap is active exactly while Keystone runs: quitting (or toggling it off)
+  clears the mapping and hands Caps Lock back to stock macOS. Launch at login keeps
+  it seamless across restarts.
+- A force-quit or crash can't clean up after itself; the next launch, toggle, or
+  reboot sweeps the mapping away.

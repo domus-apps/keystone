@@ -7,6 +7,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var settingsWindowController: SettingsWindowController?
     private var onboardingController: OnboardingWindowController?
     private var toggleItem: NSMenuItem?
+    private var signalSources: [DispatchSourceSignal] = []
 
     private static let onboardingCompletedKey = "onboarding.completed"
 
@@ -42,11 +43,27 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if CommandLine.arguments.contains("--settings") {
             openSettings()
         }
+
+        /* Route SIGTERM/SIGINT (pkill, logout edge cases, ctrl-C under
+           `swift run`) through the normal termination path, so the
+           clear-on-quit below runs for them too. Only SIGKILL and crashes
+           escape it — the next launch, toggle, or reboot sweeps up. */
+        for sig in [SIGTERM, SIGINT] {
+            signal(sig, SIG_IGN)
+            let source = DispatchSource.makeSignalSource(signal: sig, queue: .main)
+            source.setEventHandler { NSApp.terminate(nil) }
+            source.resume()
+            signalSources.append(source)
+        }
     }
 
-    /* Quit leaves the mapping in place on purpose: it lives in the HID
-       system, costs nothing, and the user turned it on. Disabling the
-       checkbox is the way to get stock Caps Lock back. */
+    /* The remap is active exactly while Keystone runs: quitting hands the
+       keyboard back to stock macOS, so the app's presence is the whole
+       story a user has to reason about. (Launch at login keeps it
+       seamless across restarts.) */
+    func applicationWillTerminate(_ notification: Notification) {
+        engine.clear()
+    }
 
     /* One place decides what the HID system and the menu should say, so
        the toggle, Settings, and the engine can never drift apart. */
