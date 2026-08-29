@@ -7,9 +7,10 @@
 // Same Liquid Glass icon language as its siblings Oriel, Coffer, and Pharos:
 // the macOS squircle, frosted-glass forms (real gaussian-blurred backdrop via
 // CoreImage), specular rim highlights, and soft layered shadows. Keystone's
-// glyph is its namesake: a glass arch of voussoirs on warm amber, with the
-// keystone itself — the brightest pane — dropping into the gap at the apex
-// and locking the whole thing together.
+// glyph is its namesake: a glass arch of even voussoirs on terracotta — the
+// fired brick of the Roman arches that gave the keystone its job — with the
+// keystone itself, the brightest pane, dropping into the gap at the apex and
+// locking the whole thing together.
 
 import AppKit
 import CoreImage
@@ -81,22 +82,22 @@ func gaussianBlur(_ image: CGImage, radius: CGFloat) -> CGImage {
 let designRect = CGRect(x: 0, y: 0, width: 1024, height: 1024)
 let bgRect = CGRect(x: 100, y: 100, width: 824, height: 824) // standard macOS icon grid
 
-/// Background layer: squircle, warm amber gradient, top sheen, outer shadow.
+/// Background layer: squircle, terracotta gradient, top sheen, outer shadow.
 func drawIconBackground(_ cg: CGContext) {
     let shape = squircle(in: bgRect)
 
     cg.saveGState()
     cg.setShadow(offset: CGSize(width: 0, height: -12), blur: 36, color: color(0x000000, 0.28))
     cg.addPath(shape)
-    cg.setFillColor(color(0xE8890C))
+    cg.setFillColor(color(0xD4501E))
     cg.fillPath()
     cg.restoreGState()
 
-    // A single restrained amber gradient, in the language of macOS system
-    // icons: the background recedes, the glyph is the hero.
+    // A single restrained terracotta gradient, in the language of macOS
+    // system icons: the background recedes, the glyph is the hero.
     linearGradient(
         cg, in: shape,
-        colors: [color(0xFFC14A), color(0xD96F06)],
+        colors: [color(0xF98A5F), color(0xB93412)],
         from: CGPoint(x: 512, y: bgRect.maxY), to: CGPoint(x: 512, y: bgRect.minY)
     )
     // Barely-there top light for depth
@@ -126,9 +127,9 @@ func drawGlassPane(
 ) {
     // Drop shadow (opaque fill, replaced by the glass interior right after)
     cg.saveGState()
-    cg.setShadow(offset: CGSize(width: 0, height: -shadowBlur * 0.4), blur: shadowBlur, color: color(0x50290A, shadowAlpha))
+    cg.setShadow(offset: CGSize(width: 0, height: -shadowBlur * 0.4), blur: shadowBlur, color: color(0x571708, shadowAlpha))
     cg.addPath(path)
-    cg.setFillColor(color(0xF3D9A8))
+    cg.setFillColor(color(0xF6CBB4))
     cg.fillPath()
     cg.restoreGState()
 
@@ -150,7 +151,10 @@ func drawGlassPane(
 // The glyph: a glass arch with a gap at the apex, and the keystone — the
 // bright hero pane — set into it, protruding a little past both faces the
 // way a real keystone does.
-let archCenter = CGPoint(x: 512, y: 430)
+/* Center height chosen so the glyph's vertical span (leg bottoms to the
+   keystone's top) sits 4px above true center — a slight optical lift, since
+   the bright keystone up top is where the eye lands. */
+let archCenter = CGPoint(x: 512, y: 444)
 let outerR: CGFloat = 258
 let innerR: CGFloat = 158
 let legDrop: CGFloat = 140
@@ -212,14 +216,16 @@ var archBounds: CGRect { archPath().boundingBox }
 var keystoneBounds: CGRect { keystonePath().boundingBox }
 
 /// Voussoir joints: faint radial seams that make the flanks read as fitted
-/// stones rather than solid tubes. Shared between the rendered icon and the
-/// flat Icon Composer layers.
+/// stones rather than solid tubes. Each flank spans 75° (springing line to
+/// the keystone gap), so seams every 25° cut it into three equal stones;
+/// the 0°/180° seams are the impost lines, where the arc meets the legs.
+/// Shared between the rendered icon and the flat Icon Composer layers.
 func drawArchJoints(_ cg: CGContext, alpha: CGFloat) {
     cg.saveGState()
-    cg.setStrokeColor(color(0x8A5410, alpha))
+    cg.setStrokeColor(color(0x8F2F10, alpha))
     cg.setLineWidth(7)
     cg.setLineCap(.round)
-    for degrees: CGFloat in [36, 63, 117, 144] {
+    for degrees: CGFloat in [0, 25, 50, 130, 155, 180] {
         let angle = degrees * .pi / 180
         cg.move(to: CGPoint(
             x: archCenter.x + cos(angle) * (innerR + 10),
@@ -344,7 +350,7 @@ func drawBanner(_ cg: CGContext, icon: CGImage) {
     let frame = CGPath(roundedRect: canvas, cornerWidth: 40, cornerHeight: 40, transform: nil)
     linearGradient(
         cg, in: frame,
-        colors: [color(0x2C1B08), color(0x150C03)],
+        colors: [color(0x30130A), color(0x170703)],
         from: CGPoint(x: canvas.midX, y: canvas.maxY), to: CGPoint(x: canvas.midX, y: canvas.minY)
     )
 
@@ -375,7 +381,7 @@ func drawBanner(_ cg: CGContext, icon: CGImage) {
 
     let tagline = NSAttributedString(string: "Input switching, without the delay", attributes: [
         .font: NSFont.systemFont(ofSize: 46, weight: .medium),
-        .foregroundColor: NSColor(srgbRed: 0.95, green: 0.78, blue: 0.5, alpha: 1),
+        .foregroundColor: NSColor(srgbRed: 1.0, green: 0.62, blue: 0.47, alpha: 1),
     ])
     tagline.draw(at: NSPoint(x: 528, y: 186))
 }
@@ -388,7 +394,7 @@ func drawSocialPreview(_ cg: CGContext, icon: CGImage) {
     // corners itself, so transparent corners would show through as white.
     linearGradient(
         cg, in: CGPath(rect: canvas, transform: nil),
-        colors: [color(0x33200A), color(0x150C03)],
+        colors: [color(0x371509), color(0x170703)],
         from: CGPoint(x: canvas.midX, y: canvas.maxY), to: CGPoint(x: canvas.midX, y: canvas.minY)
     )
 
@@ -425,7 +431,7 @@ func drawSocialPreview(_ cg: CGContext, icon: CGImage) {
     drawCentered(
         NSAttributedString(string: "Input switching, without the delay", attributes: [
             .font: NSFont.systemFont(ofSize: 38, weight: .medium),
-            .foregroundColor: NSColor(srgbRed: 0.95, green: 0.78, blue: 0.5, alpha: 1),
+            .foregroundColor: NSColor(srgbRed: 1.0, green: 0.62, blue: 0.47, alpha: 1),
         ]), y: 118)
 }
 

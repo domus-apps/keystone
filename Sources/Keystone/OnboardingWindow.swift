@@ -125,11 +125,11 @@ private final class OnboardingIllustrationView: NSView {
     override func draw(_ dirtyRect: NSRect) {
         let canvas = bounds
 
-        // Backdrop: deep warm stone, the keystone's material
+        // Backdrop: deep fired-brick brown, the keystone's material
         let backdrop = NSBezierPath(roundedRect: canvas, xRadius: 12, yRadius: 12)
         NSGradient(
-            starting: NSColor(srgbRed: 0.16, green: 0.12, blue: 0.08, alpha: 1),
-            ending: NSColor(srgbRed: 0.08, green: 0.06, blue: 0.04, alpha: 1)
+            starting: NSColor(srgbRed: 0.19, green: 0.08, blue: 0.04, alpha: 1),
+            ending: NSColor(srgbRed: 0.09, green: 0.03, blue: 0.01, alpha: 1)
         )?.draw(in: backdrop, angle: -90)
 
         func keycap(_ label: String, symbol: String?, center: NSPoint, size: NSSize)
@@ -188,7 +188,8 @@ private final class OnboardingIllustrationView: NSView {
         // The input-source pill: 한 ↔ A
         let pillRect = NSRect(x: canvas.maxX - 130, y: midY - 22, width: 96, height: 44)
         let pill = NSBezierPath(roundedRect: pillRect, xRadius: 22, yRadius: 22)
-        NSColor.systemOrange.withAlphaComponent(0.85).setFill()
+        /* The brand terracotta (make-assets.swift), not systemOrange. */
+        NSColor(srgbRed: 0.85, green: 0.34, blue: 0.13, alpha: 0.95).setFill()
         pill.fill()
         let swap = NSAttributedString(
             string: "한 ⇄ A",
