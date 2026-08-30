@@ -28,7 +28,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             showOnboarding()
         }
 
-        commandTapMonitor.onTap = { InputSourceSwitcher.toggle() }
+        AppPreferences.migrateTapPreferencesIfNeeded()
+        commandTapMonitor.onTap = { key in
+            switch AppPreferences.tapActions[key] {
+            case .toggle: InputSourceSwitcher.toggle()
+            case .select(let sourceID): InputSourceSwitcher.select(id: sourceID)
+            case nil: break
+            }
+        }
         syncMapping()
         engine.startWatching { [weak self] in
             /* A keyboard appeared or the machine woke: the mapping may have
@@ -89,19 +96,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         /* Modifier-tap switching is independent of the Caps Lock remap: it
            never touches the HID mapping, only observes. */
-        let commandKeys = AppPreferences.commandSwitchKeys
-        let optionKeys = AppPreferences.optionSwitchKeys
-        if commandKeys != .off || optionKeys != .off {
-            commandTapMonitor.selection = CommandTapMonitor.Selection(
-                leftCommand: commandKeys.includesLeft,
-                rightCommand: commandKeys.includesRight,
-                leftOption: optionKeys.includesLeft,
-                rightOption: optionKeys.includesRight)
+        let tapActions = AppPreferences.tapActions
+        if tapActions.isEmpty {
+            commandTapMonitor.stop()
+        } else {
+            commandTapMonitor.watched = Set(tapActions.keys)
             if !commandTapMonitor.start() {
                 NSLog("Keystone: event tap unavailable (Input Monitoring not granted?)")
             }
-        } else {
-            commandTapMonitor.stop()
         }
 
         toggleItem?.state = AppPreferences.isRemapEnabled ? .on : .off

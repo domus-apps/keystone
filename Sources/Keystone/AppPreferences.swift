@@ -27,40 +27,104 @@ enum AppPreferences {
         }
     }
 
-    /* Modifier-tap input switching: which ⌘ and ⌥ keys switch the input
-       source when pressed and released alone (combos always keep working —
-       a full remap would cost the key its modifier role, which is too much
-       to take from a Mac). Off by default: the watcher needs an Input
-       Monitoring grant, so the feature is strictly opt-in. */
-    enum ModifierSide: String, CaseIterable {
-        case off, left, right, both
+    /* Modifier-tap input switching: each ⌘/⌥ key can, when pressed and
+       released alone, either cycle the input source or jump to a specific
+       one (combos always keep working — a full remap would cost the key
+       its modifier role, which is too much to take from a Mac). All off
+       by default: the watcher needs an Input Monitoring grant, so the
+       feature is strictly opt-in. */
+    enum TapKey: String, CaseIterable {
+        case leftCommand, rightCommand, leftOption, rightOption
 
-        var includesLeft: Bool { self == .left || self == .both }
-        var includesRight: Bool { self == .right || self == .both }
+        var title: String {
+            switch self {
+            case .leftCommand: "Left ⌘"
+            case .rightCommand: "Right ⌘"
+            case .leftOption: "Left ⌥"
+            case .rightOption: "Right ⌥"
+            }
+        }
     }
 
-    private static let commandKeysKey = "pref.commandSwitchKeys"
-    private static let optionKeysKey = "pref.optionSwitchKeys"
+    enum TapAction: Equatable {
+        /// Cycle to the next enabled input source, like ⌃Space.
+        case toggle
+        /// Jump to one specific input source.
+        case select(sourceID: String)
 
-    static var commandSwitchKeys: ModifierSide {
+        /* Stored as a plain string: "toggle", or the source ID prefixed. */
+        var stored: String {
+            switch self {
+            case .toggle: "toggle"
+            case .select(let sourceID): "select:\(sourceID)"
+            }
+        }
+
+        init?(stored: String) {
+            if stored == "toggle" {
+                self = .toggle
+            } else if stored.hasPrefix("select:") {
+                self = .select(sourceID: String(stored.dropFirst("select:".count)))
+            } else {
+                return nil
+            }
+        }
+    }
+
+    private static let tapActionsKey = "pref.tapActions"
+
+    /// Keys without an entry are off.
+    static var tapActions: [TapKey: TapAction] {
         get {
-            UserDefaults.standard.string(forKey: commandKeysKey)
-                .flatMap(ModifierSide.init(rawValue:)) ?? .off
+            let raw =
+                UserDefaults.standard.dictionary(forKey: tapActionsKey) as? [String: String]
+                ?? [:]
+            var actions: [TapKey: TapAction] = [:]
+            for (key, value) in raw {
+                if let tapKey = TapKey(rawValue: key), let action = TapAction(stored: value) {
+                    actions[tapKey] = action
+                }
+            }
+            return actions
         }
         set {
-            UserDefaults.standard.set(newValue.rawValue, forKey: commandKeysKey)
+            let raw = Dictionary(
+                uniqueKeysWithValues: newValue.map { ($0.key.rawValue, $0.value.stored) })
+            UserDefaults.standard.set(raw, forKey: tapActionsKey)
             NotificationCenter.default.post(name: changed, object: nil)
         }
     }
 
-    static var optionSwitchKeys: ModifierSide {
-        get {
-            UserDefaults.standard.string(forKey: optionKeysKey)
-                .flatMap(ModifierSide.init(rawValue:)) ?? .off
+    static func setTapAction(_ action: TapAction?, for key: TapKey) {
+        var actions = tapActions
+        actions[key] = action
+        tapActions = actions
+    }
+
+    /* 1.3.0 stored the tap feature as two side selections; carry them over
+       as toggle actions once, then retire the old keys. */
+    static func migrateTapPreferencesIfNeeded() {
+        let defaults = UserDefaults.standard
+        guard defaults.object(forKey: tapActionsKey) == nil else { return }
+
+        var actions: [TapKey: TapAction] = [:]
+        let sides = [
+            ("pref.commandSwitchKeys", TapKey.leftCommand, TapKey.rightCommand),
+            ("pref.optionSwitchKeys", TapKey.leftOption, TapKey.rightOption),
+        ]
+        for (oldKey, left, right) in sides {
+            switch defaults.string(forKey: oldKey) {
+            case "left": actions[left] = .toggle
+            case "right": actions[right] = .toggle
+            case "both":
+                actions[left] = .toggle
+                actions[right] = .toggle
+            default: break
+            }
+            defaults.removeObject(forKey: oldKey)
         }
-        set {
-            UserDefaults.standard.set(newValue.rawValue, forKey: optionKeysKey)
-            NotificationCenter.default.post(name: changed, object: nil)
+        if !actions.isEmpty {
+            tapActions = actions
         }
     }
 

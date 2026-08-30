@@ -24,15 +24,15 @@ import Testing
             == KeyRemap.FunctionKey.f19.usage)
 }
 
-@Test func commandKeySelectionsIncludeTheRightSides() {
-    #expect(!AppPreferences.ModifierSide.off.includesLeft)
-    #expect(!AppPreferences.ModifierSide.off.includesRight)
-    #expect(AppPreferences.ModifierSide.left.includesLeft)
-    #expect(!AppPreferences.ModifierSide.left.includesRight)
-    #expect(!AppPreferences.ModifierSide.right.includesLeft)
-    #expect(AppPreferences.ModifierSide.right.includesRight)
-    #expect(AppPreferences.ModifierSide.both.includesLeft)
-    #expect(AppPreferences.ModifierSide.both.includesRight)
+@Test func tapActionsRoundTripThroughStorage() {
+    #expect(AppPreferences.TapAction(stored: "toggle") == .toggle)
+    #expect(
+        AppPreferences.TapAction(stored: "select:com.apple.keylayout.ABC")
+            == .select(sourceID: "com.apple.keylayout.ABC"))
+    #expect(AppPreferences.TapAction(stored: "nonsense") == nil)
+    #expect(AppPreferences.TapAction.toggle.stored == "toggle")
+    #expect(
+        AppPreferences.TapAction.select(sourceID: "a.b").stored == "select:a.b")
 }
 
 @Test func clearArgumentIsAnEmptyMappingList() throws {

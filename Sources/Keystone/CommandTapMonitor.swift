@@ -12,17 +12,11 @@ import IOKit.hid
    needs: modifier changes plus the fact THAT a key went down mid-hold
    (to cancel), never what the key was. */
 final class CommandTapMonitor {
-    var onTap: (() -> Void)?
+    var onTap: ((AppPreferences.TapKey) -> Void)?
 
     /* Which physical keys count as the switch. Changing this while running
        takes effect on the next press. */
-    struct Selection {
-        var leftCommand = false
-        var rightCommand = false
-        var leftOption = false
-        var rightOption = false
-    }
-    var selection = Selection()
+    var watched: Set<AppPreferences.TapKey> = []
 
     private var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
@@ -35,26 +29,26 @@ final class CommandTapMonitor {
        sibling's bit (the same modifier on the other side), and its class
        flag. Everything the alone-check needs. */
     private struct WatchedKey {
+        let tapKey: AppPreferences.TapKey
         let keycode: Int
         let ownBit: UInt64
         let siblingBit: UInt64
         let classFlag: CGEventFlags
-        let isWatched: (Selection) -> Bool
     }
 
     private static let watchedKeys: [WatchedKey] = [
         WatchedKey(
-            keycode: kVK_Command, ownBit: 0x08, siblingBit: 0x10,
-            classFlag: .maskCommand, isWatched: \.leftCommand),
+            tapKey: .leftCommand, keycode: kVK_Command, ownBit: 0x08, siblingBit: 0x10,
+            classFlag: .maskCommand),
         WatchedKey(
-            keycode: kVK_RightCommand, ownBit: 0x10, siblingBit: 0x08,
-            classFlag: .maskCommand, isWatched: \.rightCommand),
+            tapKey: .rightCommand, keycode: kVK_RightCommand, ownBit: 0x10, siblingBit: 0x08,
+            classFlag: .maskCommand),
         WatchedKey(
-            keycode: kVK_Option, ownBit: 0x20, siblingBit: 0x40,
-            classFlag: .maskAlternate, isWatched: \.leftOption),
+            tapKey: .leftOption, keycode: kVK_Option, ownBit: 0x20, siblingBit: 0x40,
+            classFlag: .maskAlternate),
         WatchedKey(
-            keycode: kVK_RightOption, ownBit: 0x40, siblingBit: 0x20,
-            classFlag: .maskAlternate, isWatched: \.rightOption),
+            tapKey: .rightOption, keycode: kVK_RightOption, ownBit: 0x40, siblingBit: 0x20,
+            classFlag: .maskAlternate),
     ]
 
     /* Every modifier class the tap can see; a lone tap must carry none of
@@ -132,7 +126,7 @@ final class CommandTapMonitor {
             let keycode = event.getIntegerValueField(.keyboardEventKeycode)
             guard
                 let key = Self.watchedKeys.first(where: { $0.keycode == keycode }),
-                key.isWatched(selection)
+                watched.contains(key.tapKey)
             else {
                 /* Some other modifier (or an unwatched one) moved mid-hold:
                    chord, not a tap. */
@@ -150,7 +144,7 @@ final class CommandTapMonitor {
                 armedKeycode = alone ? keycode : nil
             } else if armedKeycode == keycode {
                 armedKeycode = nil
-                onTap?()
+                onTap?(key.tapKey)
             }
 
         case .tapDisabledByTimeout, .tapDisabledByUserInput:
