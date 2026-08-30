@@ -4,6 +4,16 @@ All notable changes to Keystone are documented here. The release workflow publis
 
 Keep each bullet on a single line: release notes render line breaks literally (both on GitHub and in the update dialog), so wrapped lines would break mid-sentence.
 
+## 1.4.0
+
+### Added
+
+- Each tap key can now jump to a specific input source instead of cycling — pick any enabled source per key in Settings, e.g. left ⌘ for ABC and right ⌘ for 2-Set Korean. Existing tap settings carry over as "Next input source".
+
+### Changed
+
+- Settings redesigned in the system's grouped style — section headers, rounded boxes, and switches, like Xcode's settings.
+
 ## 1.3.0
 
 ### Added
