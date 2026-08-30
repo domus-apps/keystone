@@ -4,6 +4,17 @@ All notable changes to Keystone are documented here. The release workflow publis
 
 Keep each bullet on a single line: release notes render line breaks literally (both on GitHub and in the update dialog), so wrapped lines would break mid-sentence.
 
+## 1.3.0
+
+### Added
+
+- Tap a ⌘ or ⌥ key on its own to switch the input source — left, right, or both sides of each, chosen in Settings. Every shortcut using the key keeps working: a lone press-and-release is the whole gesture.
+- Watching for that tap is the one Keystone feature that observes keys, so it asks for the Input Monitoring permission — and only once it's turned on.
+
+### Fixed
+
+- Settings panes now scroll when their content is taller than the window.
+
 ## 1.2.1
 
 ### Added
