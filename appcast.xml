@@ -183,5 +183,22 @@
         sparkle:edSignature="PjZA4998QYN0Tu1QzuRqOfLwlDwvaAowLTl99tiSLq6O4x2qgUMEZR/IKv11Bxo4XP3oH9qlZNw1qyA5wCyLAA==" length="2928150"
         type="application/octet-stream"/>
     </item>
+    <item>
+      <title>Keystone v1.2.1</title>
+      <link>https://github.com/domus-apps/keystone/releases/tag/v1.2.1</link>
+      <pubDate>Sun, 30 Aug 2026 01:40:11 +0000</pubDate>
+      <description><![CDATA[
+<h3>Added</h3>
+<ul>
+<li>Spotlight now finds the app by its Korean name and by what it does — 키스톤, 한영 전환, 한영키, 캡스락, and caps lock all match.</li>
+</ul>      ]]></description>
+      <sparkle:version>11</sparkle:version>
+      <sparkle:shortVersionString>1.2.1</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/keystone/releases/download/v1.2.1/Keystone.zip"
+        sparkle:edSignature="FdgjRbEFYVRc2IxLzsmAuaXO5SV1senJKAKPf/7wFdCegcD/g7Wp/2c5UL+LxwNBP3qtkAlPHMAYFwG7TkzQCA==" length="2928272"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
