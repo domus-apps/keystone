@@ -45,7 +45,7 @@ final class SettingsWindowController: NSWindowController {
         toolbar.displayMode = .iconOnly
         window.toolbar = toolbar
         window.isReleasedWhenClosed = false
-        window.setContentSize(NSSize(width: 640, height: 360))
+        window.setContentSize(NSSize(width: 640, height: 440))
         window.center()
 
         super.init(window: window)
@@ -352,6 +352,42 @@ final class RemapPaneViewController: NSViewController {
         return popUp
     }()
 
+    /* The tap-key options by name; selections map back through
+       representedObject. */
+    private lazy var commandKeysPopUp = Self.makeSidePopUp(
+        target: self, action: #selector(changeCommandKeys))
+    private lazy var optionKeysPopUp = Self.makeSidePopUp(
+        target: self, action: #selector(changeOptionKeys))
+
+    private static func makeSidePopUp(target: AnyObject, action: Selector) -> NSPopUpButton {
+        let popUp = NSPopUpButton()
+        for side in AppPreferences.ModifierSide.allCases {
+            let item = NSMenuItem(title: title(for: side), action: nil, keyEquivalent: "")
+            item.representedObject = side
+            popUp.menu?.addItem(item)
+        }
+        popUp.target = target
+        popUp.action = action
+        return popUp
+    }
+
+    private let permissionNote = SettingsNote.make(
+        "Input Monitoring isn't granted yet — allow Keystone under Privacy & "
+            + "Security › Input Monitoring. The system prompt appears only on the "
+            + "first ask.")
+    private lazy var permissionButton = NSButton(
+        title: "Open Privacy & Security Settings…", target: self,
+        action: #selector(openInputMonitoringSettings))
+
+    private static func title(for side: AppPreferences.ModifierSide) -> String {
+        switch side {
+        case .off: "Off"
+        case .left: "Left"
+        case .right: "Right"
+        case .both: "Both"
+        }
+    }
+
     override func loadView() {
         remapCheckbox.state = AppPreferences.isRemapEnabled ? .on : .off
         keyPopUp.selectItem(
@@ -372,13 +408,37 @@ final class RemapPaneViewController: NSViewController {
             title: "Open Keyboard Settings…", target: self,
             action: #selector(openKeyboardSettings))
 
-        let stack = NSStackView(views: [remapRow, remapNote, shortcutNote, openShortcuts])
+        syncCommandControls()
+        let tapHeader = NSTextField(
+            labelWithString: "Switch input source when tapped alone:")
+        let commandKeysRow = NSStackView(views: [
+            NSTextField(labelWithString: "Command ⌘:"), commandKeysPopUp,
+        ])
+        commandKeysRow.orientation = .horizontal
+        let optionKeysRow = NSStackView(views: [
+            NSTextField(labelWithString: "Option ⌥:"), optionKeysPopUp,
+        ])
+        optionKeysRow.orientation = .horizontal
+
+        let commandNote = SettingsNote.make(
+            "A modifier pressed and released with nothing else in between switches "
+                + "the input source; every shortcut using it keeps working. Watching "
+                + "for that lone tap is the one Keystone feature that observes keys, "
+                + "so it needs the Input Monitoring permission.")
+
+        let stack = NSStackView(views: [
+            remapRow, remapNote, shortcutNote, openShortcuts,
+            tapHeader, commandKeysRow, optionKeysRow, commandNote,
+            permissionNote, permissionButton,
+        ])
         stack.orientation = .vertical
         stack.alignment = .leading
         stack.spacing = 8
         stack.setCustomSpacing(20, after: remapNote)
+        stack.setCustomSpacing(20, after: openShortcuts)
         stack.translatesAutoresizingMaskIntoConstraints = false
         view = SettingsNote.paneContainer(wrapping: stack)
+        syncCommandControls()
 
         /* The menu bar toggle changes the same preference; stay in sync
            while the pane is open. */
@@ -390,7 +450,22 @@ final class RemapPaneViewController: NSViewController {
             self.keyPopUp.selectItem(
                 at: KeyRemap.FunctionKey.allCases.firstIndex(of: AppPreferences.destination)
                     ?? 0)
+            self.syncCommandControls()
         }
+    }
+
+    private func syncCommandControls() {
+        let commandKeys = AppPreferences.commandSwitchKeys
+        let optionKeys = AppPreferences.optionSwitchKeys
+        commandKeysPopUp.selectItem(
+            at: AppPreferences.ModifierSide.allCases.firstIndex(of: commandKeys) ?? 0)
+        optionKeysPopUp.selectItem(
+            at: AppPreferences.ModifierSide.allCases.firstIndex(of: optionKeys) ?? 0)
+
+        let needsPermission =
+            (commandKeys != .off || optionKeys != .off) && !CommandTapMonitor.hasPermission
+        permissionNote.isHidden = !needsPermission
+        permissionButton.isHidden = !needsPermission
     }
 
     /* Toggle the preference rather than reading the checkbox: the action
@@ -407,10 +482,46 @@ final class RemapPaneViewController: NSViewController {
         AppPreferences.destination = key
     }
 
+    @objc private func changeCommandKeys() {
+        guard
+            let side = commandKeysPopUp.selectedItem?.representedObject
+                as? AppPreferences.ModifierSide
+        else { return }
+        AppPreferences.commandSwitchKeys = side
+        requestPermissionIfNeeded()
+    }
+
+    @objc private func changeOptionKeys() {
+        guard
+            let side = optionKeysPopUp.selectedItem?.representedObject
+                as? AppPreferences.ModifierSide
+        else { return }
+        AppPreferences.optionSwitchKeys = side
+        requestPermissionIfNeeded()
+    }
+
+    private func requestPermissionIfNeeded() {
+        if AppPreferences.commandSwitchKeys != .off || AppPreferences.optionSwitchKeys != .off,
+            !CommandTapMonitor.hasPermission
+        {
+            CommandTapMonitor.requestPermission()
+        }
+        syncCommandControls()
+    }
+
     @objc private func openKeyboardSettings() {
         guard
             let url = URL(
                 string: "x-apple.systempreferences:com.apple.Keyboard-Settings.extension")
+        else { return }
+        NSWorkspace.shared.open(url)
+    }
+
+    @objc private func openInputMonitoringSettings() {
+        guard
+            let url = URL(
+                string: "x-apple.systempreferences:com.apple.preference.security"
+                    + "?Privacy_ListenEvent")
         else { return }
         NSWorkspace.shared.open(url)
     }
@@ -428,18 +539,42 @@ enum SettingsNote {
     }
 
     /* Standard pane chrome: content pinned to the top-left under the
-       title bar, capped at a readable width. */
+       title bar, capped at a readable width — and scrollable, for panes
+       taller than the window. */
     static func paneContainer(wrapping stack: NSStackView) -> NSView {
-        let container = NSView()
-        container.addSubview(stack)
+        let document = FlippedView()
+        document.translatesAutoresizingMaskIntoConstraints = false
+        document.addSubview(stack)
+
+        let scroll = NSScrollView()
+        scroll.documentView = document
+        scroll.hasVerticalScroller = true
+        scroll.autohidesScrollers = true
+        scroll.drawsBackground = false
+        /* Under .fullSizeContentView the scroll view runs beneath the title
+           bar; the automatic inset keeps content (and the scroll range)
+           below it, like every standard settings pane. */
+        scroll.automaticallyAdjustsContentInsets = true
+
+        let clip = scroll.contentView
         NSLayoutConstraint.activate([
-            stack.topAnchor.constraint(
-                equalTo: container.safeAreaLayoutGuide.topAnchor, constant: 20),
-            stack.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 24),
+            document.leadingAnchor.constraint(equalTo: clip.leadingAnchor),
+            document.trailingAnchor.constraint(equalTo: clip.trailingAnchor),
+            document.topAnchor.constraint(equalTo: clip.topAnchor),
+            /* Height comes from the content: the bottom padding below makes
+               the document exactly as tall as the stack needs. */
+            stack.topAnchor.constraint(equalTo: document.topAnchor, constant: 20),
+            stack.leadingAnchor.constraint(equalTo: document.leadingAnchor, constant: 24),
             stack.trailingAnchor.constraint(
-                lessThanOrEqualTo: container.trailingAnchor, constant: -24),
+                lessThanOrEqualTo: document.trailingAnchor, constant: -24),
+            stack.bottomAnchor.constraint(equalTo: document.bottomAnchor, constant: -20),
             stack.widthAnchor.constraint(lessThanOrEqualToConstant: 420),
         ])
-        return container
+        return scroll
+    }
+
+    /* Scroll documents want a top-left origin. */
+    private final class FlippedView: NSView {
+        override var isFlipped: Bool { true }
     }
 }

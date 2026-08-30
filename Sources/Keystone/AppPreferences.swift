@@ -27,6 +27,43 @@ enum AppPreferences {
         }
     }
 
+    /* Modifier-tap input switching: which ⌘ and ⌥ keys switch the input
+       source when pressed and released alone (combos always keep working —
+       a full remap would cost the key its modifier role, which is too much
+       to take from a Mac). Off by default: the watcher needs an Input
+       Monitoring grant, so the feature is strictly opt-in. */
+    enum ModifierSide: String, CaseIterable {
+        case off, left, right, both
+
+        var includesLeft: Bool { self == .left || self == .both }
+        var includesRight: Bool { self == .right || self == .both }
+    }
+
+    private static let commandKeysKey = "pref.commandSwitchKeys"
+    private static let optionKeysKey = "pref.optionSwitchKeys"
+
+    static var commandSwitchKeys: ModifierSide {
+        get {
+            UserDefaults.standard.string(forKey: commandKeysKey)
+                .flatMap(ModifierSide.init(rawValue:)) ?? .off
+        }
+        set {
+            UserDefaults.standard.set(newValue.rawValue, forKey: commandKeysKey)
+            NotificationCenter.default.post(name: changed, object: nil)
+        }
+    }
+
+    static var optionSwitchKeys: ModifierSide {
+        get {
+            UserDefaults.standard.string(forKey: optionKeysKey)
+                .flatMap(ModifierSide.init(rawValue:)) ?? .off
+        }
+        set {
+            UserDefaults.standard.set(newValue.rawValue, forKey: optionKeysKey)
+            NotificationCenter.default.post(name: changed, object: nil)
+        }
+    }
+
     /* Falls back to the conventional F19 for unset or unrecognized values. */
     static var destination: KeyRemap.FunctionKey {
         get {

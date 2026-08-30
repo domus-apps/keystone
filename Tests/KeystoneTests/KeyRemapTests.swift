@@ -24,6 +24,17 @@ import Testing
             == KeyRemap.FunctionKey.f19.usage)
 }
 
+@Test func commandKeySelectionsIncludeTheRightSides() {
+    #expect(!AppPreferences.ModifierSide.off.includesLeft)
+    #expect(!AppPreferences.ModifierSide.off.includesRight)
+    #expect(AppPreferences.ModifierSide.left.includesLeft)
+    #expect(!AppPreferences.ModifierSide.left.includesRight)
+    #expect(!AppPreferences.ModifierSide.right.includesLeft)
+    #expect(AppPreferences.ModifierSide.right.includesRight)
+    #expect(AppPreferences.ModifierSide.both.includesLeft)
+    #expect(AppPreferences.ModifierSide.both.includesRight)
+}
+
 @Test func clearArgumentIsAnEmptyMappingList() throws {
     let object =
         try JSONSerialization.jsonObject(with: Data(KeyRemap.clearArgument.utf8))

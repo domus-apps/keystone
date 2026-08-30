@@ -3,6 +3,7 @@ import AppKit
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem?
     private let engine = RemapEngine()
+    private let commandTapMonitor = CommandTapMonitor()
     private let updater = UpdaterController()
     private var settingsWindowController: SettingsWindowController?
     private var onboardingController: OnboardingWindowController?
@@ -27,6 +28,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             showOnboarding()
         }
 
+        commandTapMonitor.onTap = { InputSourceSwitcher.toggle() }
         syncMapping()
         engine.startWatching { [weak self] in
             /* A keyboard appeared or the machine woke: the mapping may have
@@ -39,6 +41,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             forName: AppPreferences.changed, object: nil, queue: .main
         ) { [weak self] _ in
             self?.updateStatusItemVisibility()
+            self?.syncMapping()
+        }
+        /* Coming back from System Settings after granting Input Monitoring:
+           re-sync so the tap-alone monitor starts without a relaunch.
+           syncMapping is idempotent, so spurious activations cost nothing. */
+        NotificationCenter.default.addObserver(
+            forName: NSApplication.didBecomeActiveNotification, object: nil, queue: .main
+        ) { [weak self] _ in
             self?.syncMapping()
         }
 
@@ -67,8 +77,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         engine.clear()
     }
 
-    /* One place decides what the HID system and the menu should say, so
-       the toggle, Settings, and the engine can never drift apart. */
+    /* One place decides what the HID system, the event tap, and the menu
+       should say, so the toggle, Settings, and the engine never drift. */
     private func syncMapping() {
         let destination = AppPreferences.destination
         if AppPreferences.isRemapEnabled {
@@ -76,6 +86,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         } else {
             engine.clear()
         }
+
+        /* Modifier-tap switching is independent of the Caps Lock remap: it
+           never touches the HID mapping, only observes. */
+        let commandKeys = AppPreferences.commandSwitchKeys
+        let optionKeys = AppPreferences.optionSwitchKeys
+        if commandKeys != .off || optionKeys != .off {
+            commandTapMonitor.selection = CommandTapMonitor.Selection(
+                leftCommand: commandKeys.includesLeft,
+                rightCommand: commandKeys.includesRight,
+                leftOption: optionKeys.includesLeft,
+                rightOption: optionKeys.includesRight)
+            if !commandTapMonitor.start() {
+                NSLog("Keystone: event tap unavailable (Input Monitoring not granted?)")
+            }
+        } else {
+            commandTapMonitor.stop()
+        }
+
         toggleItem?.state = AppPreferences.isRemapEnabled ? .on : .off
         toggleItem?.title = "Remap Caps Lock to \(destination.title)"
     }
