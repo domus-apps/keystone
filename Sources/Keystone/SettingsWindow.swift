@@ -3,19 +3,21 @@ import ServiceManagement
 
 // MARK: - Window
 
-/* One pane today; future panes slot in by extending this enum. */
 enum SettingsPane: Int, CaseIterable {
     case general
+    case remap
 
     var title: String {
         switch self {
         case .general: "General"
+        case .remap: "Remapping"
         }
     }
 
     var symbolName: String {
         switch self {
         case .general: "gearshape"
+        case .remap: "keyboard"
         }
     }
 }
@@ -65,6 +67,7 @@ final class SettingsSplitViewController: NSSplitViewController {
     private let sidebar = SettingsSidebarViewController()
     private let paneContainer = NSViewController()
     private let generalPane: GeneralPaneViewController
+    private let remapPane = RemapPaneViewController()
     private var currentPane: NSViewController?
 
     init(updater: UpdaterController) {
@@ -94,6 +97,7 @@ final class SettingsSplitViewController: NSSplitViewController {
         let next: NSViewController =
             switch pane {
             case .general: generalPane
+            case .remap: remapPane
             }
         guard next !== currentPane else { return }
 
@@ -254,13 +258,85 @@ final class GeneralPaneViewController: NSViewController {
         checkboxWithTitle: "Launch at login", target: self,
         action: #selector(toggleLaunchAtLogin))
 
-    private lazy var remapCheckbox = NSButton(
-        checkboxWithTitle: "Remap Caps Lock to:", target: self,
-        action: #selector(toggleRemap))
-
     private lazy var hideMenuBarIconCheckbox = NSButton(
         checkboxWithTitle: "Hide menu bar icon", target: self,
         action: #selector(toggleHideMenuBarIcon))
+
+    /* SMAppService needs a real app bundle; a bare `swift run` binary has no
+       bundle identifier to register. */
+    private var isBundledApp: Bool {
+        Bundle.main.bundleIdentifier != nil
+    }
+
+    override func loadView() {
+        var views: [NSView] = [launchAtLoginCheckbox]
+        if isBundledApp {
+            launchAtLoginCheckbox.state = SMAppService.mainApp.status == .enabled ? .on : .off
+        } else {
+            launchAtLoginCheckbox.isEnabled = false
+            views.append(
+                SettingsNote.make("Available in the bundled app only (Scripts/bundle.sh)."))
+        }
+
+        hideMenuBarIconCheckbox.state = AppPreferences.isMenuBarIconHidden ? .on : .off
+        views.append(hideMenuBarIconCheckbox)
+        let hideNote = SettingsNote.make(
+            "While hidden, launch Keystone again to open Settings. "
+                + "The app appears in the Dock only while this window is open.")
+        views.append(hideNote)
+
+        /* Updates: mirror the menu bar's Check for Updates here too, the
+           suite-standard spot. "dev" for `swift run` builds, which have no
+           Info.plist — same fallback as the status menu's title. */
+        views.append(updater.makeCheckButton())
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? "dev"
+        let build = (info?["CFBundleVersion"] as? String).map { " (\($0))" } ?? ""
+        views.append(SettingsNote.make("Version \(version)\(build)"))
+
+        let stack = NSStackView(views: views)
+        stack.orientation = .vertical
+        stack.alignment = .leading
+        stack.spacing = 8
+        stack.setCustomSpacing(20, after: hideNote)
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        view = SettingsNote.paneContainer(wrapping: stack)
+
+        /* The menu bar has no toggle for this, but stay in sync anyway in
+           case a future path changes the preference elsewhere. */
+        NotificationCenter.default.addObserver(
+            forName: AppPreferences.changed, object: nil, queue: .main
+        ) { [weak self] _ in
+            guard let self else { return }
+            self.hideMenuBarIconCheckbox.state =
+                AppPreferences.isMenuBarIconHidden ? .on : .off
+        }
+    }
+
+    @objc private func toggleHideMenuBarIcon() {
+        AppPreferences.isMenuBarIconHidden.toggle()
+    }
+
+    @objc private func toggleLaunchAtLogin() {
+        do {
+            if launchAtLoginCheckbox.state == .on {
+                try SMAppService.mainApp.register()
+            } else {
+                try SMAppService.mainApp.unregister()
+            }
+        } catch {
+            launchAtLoginCheckbox.state = launchAtLoginCheckbox.state == .on ? .off : .on
+            NSLog("Keystone: launch-at-login change failed: \(error)")
+        }
+    }
+}
+
+// MARK: - Remapping pane
+
+final class RemapPaneViewController: NSViewController {
+    private lazy var remapCheckbox = NSButton(
+        checkboxWithTitle: "Remap Caps Lock to:", target: self,
+        action: #selector(toggleRemap))
 
     /* Each spare function key by name; the selection maps back through
        representedObject. */
@@ -276,83 +352,33 @@ final class GeneralPaneViewController: NSViewController {
         return popUp
     }()
 
-    /* SMAppService needs a real app bundle; a bare `swift run` binary has no
-       bundle identifier to register. */
-    private var isBundledApp: Bool {
-        Bundle.main.bundleIdentifier != nil
-    }
-
-    private func note(_ text: String) -> NSTextField {
-        let note = NSTextField(wrappingLabelWithString: text)
-        note.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
-        note.textColor = .secondaryLabelColor
-        return note
-    }
-
     override func loadView() {
-        var views: [NSView] = [launchAtLoginCheckbox]
-        if isBundledApp {
-            launchAtLoginCheckbox.state = SMAppService.mainApp.status == .enabled ? .on : .off
-        } else {
-            launchAtLoginCheckbox.isEnabled = false
-            views.append(note("Available in the bundled app only (Scripts/bundle.sh)."))
-        }
-
         remapCheckbox.state = AppPreferences.isRemapEnabled ? .on : .off
         keyPopUp.selectItem(
             at: KeyRemap.FunctionKey.allCases.firstIndex(of: AppPreferences.destination) ?? 0)
         let remapRow = NSStackView(views: [remapCheckbox, keyPopUp])
         remapRow.orientation = .horizontal
-        views.append(remapRow)
-        views.append(note(
+
+        let remapNote = SettingsNote.make(
             "The remap lives in macOS's HID system — instant, and no process touches "
                 + "your keystrokes. Turning it off, or quitting Keystone, restores "
-                + "stock Caps Lock immediately."))
+                + "stock Caps Lock immediately.")
 
-        let shortcutNote = note(
+        let shortcutNote = SettingsNote.make(
             "For delay-free input switching, bind the shortcut to the same key: "
                 + "System Settings › Keyboard › Keyboard Shortcuts… › Input Sources › "
                 + "“Select next source in Input menu”, then press Caps Lock to record it.")
-        views.append(shortcutNote)
         let openShortcuts = NSButton(
             title: "Open Keyboard Settings…", target: self,
             action: #selector(openKeyboardSettings))
-        views.append(openShortcuts)
 
-        hideMenuBarIconCheckbox.state = AppPreferences.isMenuBarIconHidden ? .on : .off
-        views.append(hideMenuBarIconCheckbox)
-        let hideNote = note(
-            "While hidden, launch Keystone again to open Settings. "
-                + "The app appears in the Dock only while this window is open.")
-        views.append(hideNote)
-
-        /* Updates: mirror the menu bar's Check for Updates here too, the
-           suite-standard spot. */
-        views.append(updater.makeCheckButton())
-        let info = Bundle.main.infoDictionary
-        if let version = info?["CFBundleShortVersionString"] as? String {
-            let build = (info?["CFBundleVersion"] as? String).map { " (\($0))" } ?? ""
-            views.append(note("Version \(version)\(build)"))
-        }
-
-        let stack = NSStackView(views: views)
+        let stack = NSStackView(views: [remapRow, remapNote, shortcutNote, openShortcuts])
         stack.orientation = .vertical
         stack.alignment = .leading
         stack.spacing = 8
-        stack.setCustomSpacing(20, after: shortcutNote)
+        stack.setCustomSpacing(20, after: remapNote)
         stack.translatesAutoresizingMaskIntoConstraints = false
-
-        let container = NSView()
-        container.addSubview(stack)
-        NSLayoutConstraint.activate([
-            stack.topAnchor.constraint(
-                equalTo: container.safeAreaLayoutGuide.topAnchor, constant: 20),
-            stack.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 24),
-            stack.trailingAnchor.constraint(
-                lessThanOrEqualTo: container.trailingAnchor, constant: -24),
-            stack.widthAnchor.constraint(lessThanOrEqualToConstant: 420),
-        ])
-        view = container
+        view = SettingsNote.paneContainer(wrapping: stack)
 
         /* The menu bar toggle changes the same preference; stay in sync
            while the pane is open. */
@@ -361,20 +387,15 @@ final class GeneralPaneViewController: NSViewController {
         ) { [weak self] _ in
             guard let self else { return }
             self.remapCheckbox.state = AppPreferences.isRemapEnabled ? .on : .off
-            self.hideMenuBarIconCheckbox.state = AppPreferences.isMenuBarIconHidden ? .on : .off
             self.keyPopUp.selectItem(
                 at: KeyRemap.FunctionKey.allCases.firstIndex(of: AppPreferences.destination)
                     ?? 0)
         }
     }
 
-    @objc private func toggleHideMenuBarIcon() {
-        AppPreferences.isMenuBarIconHidden.toggle()
-    }
-
     /* Toggle the preference rather than reading the checkbox: the action
        can fire before AppKit flips the control's state (notably under
-       accessibility-driven clicks), and the observer below re-syncs the
+       accessibility-driven clicks), and the observer above re-syncs the
        checkbox from the preference anyway. */
     @objc private func toggleRemap() {
         AppPreferences.isRemapEnabled.toggle()
@@ -393,17 +414,32 @@ final class GeneralPaneViewController: NSViewController {
         else { return }
         NSWorkspace.shared.open(url)
     }
+}
 
-    @objc private func toggleLaunchAtLogin() {
-        do {
-            if launchAtLoginCheckbox.state == .on {
-                try SMAppService.mainApp.register()
-            } else {
-                try SMAppService.mainApp.unregister()
-            }
-        } catch {
-            launchAtLoginCheckbox.state = launchAtLoginCheckbox.state == .on ? .off : .on
-            NSLog("Keystone: launch-at-login change failed: \(error)")
-        }
+// MARK: - Shared pane furniture
+
+enum SettingsNote {
+    /* The small secondary explainer used across panes. */
+    static func make(_ text: String) -> NSTextField {
+        let note = NSTextField(wrappingLabelWithString: text)
+        note.font = .systemFont(ofSize: NSFont.smallSystemFontSize)
+        note.textColor = .secondaryLabelColor
+        return note
+    }
+
+    /* Standard pane chrome: content pinned to the top-left under the
+       title bar, capped at a readable width. */
+    static func paneContainer(wrapping stack: NSStackView) -> NSView {
+        let container = NSView()
+        container.addSubview(stack)
+        NSLayoutConstraint.activate([
+            stack.topAnchor.constraint(
+                equalTo: container.safeAreaLayoutGuide.topAnchor, constant: 20),
+            stack.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 24),
+            stack.trailingAnchor.constraint(
+                lessThanOrEqualTo: container.trailingAnchor, constant: -24),
+            stack.widthAnchor.constraint(lessThanOrEqualToConstant: 420),
+        ])
+        return container
     }
 }
