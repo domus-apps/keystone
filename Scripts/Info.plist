@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleAlternateNames</key>
+	<array>
+		<string>키스톤</string>
+		<string>한영 전환</string>
+		<string>한영키</string>
+		<string>캡스락</string>
+		<string>caps lock</string>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>Keystone</string>
 	<key>CFBundleIdentifier</key>
