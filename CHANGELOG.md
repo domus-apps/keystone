@@ -4,6 +4,13 @@ All notable changes to Keystone are documented here. The release workflow publis
 
 Keep each bullet on a single line: release notes render line breaks literally (both on GitHub and in the update dialog), so wrapped lines would break mid-sentence.
 
+## 1.2.0
+
+### Changed
+
+- Settings is now two panes: the Caps Lock toggle, destination key, and the Keyboard Settings shortcut moved to their own Remapping pane in the sidebar, leaving General to launch-at-login, the menu bar icon, and updates.
+- The version and build number under Check for Updates now show in development builds too (as "Version dev").
+
 ## 1.1.0
 
 ### Added
