@@ -7,6 +7,15 @@ enum AppPreferences {
 
     private static let remapEnabledKey = "pref.remapEnabled"
     private static let destinationKeyKey = "pref.destinationKey"
+    private static let hideMenuBarIconKey = "pref.hideMenuBarIcon"
+
+    static var isMenuBarIconHidden: Bool {
+        get { UserDefaults.standard.bool(forKey: hideMenuBarIconKey) }
+        set {
+            UserDefaults.standard.set(newValue, forKey: hideMenuBarIconKey)
+            NotificationCenter.default.post(name: changed, object: nil)
+        }
+    }
 
     /* On by default: remapping is the app's whole job, and onboarding has
        already told the user what enabling means. */

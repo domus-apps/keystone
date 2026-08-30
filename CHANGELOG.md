@@ -4,6 +4,16 @@ All notable changes to Keystone are documented here. The release workflow publis
 
 Keep each bullet on a single line: release notes render line breaks literally (both on GitHub and in the update dialog), so wrapped lines would break mid-sentence.
 
+## 1.1.0
+
+### Added
+
+- The menu bar icon can be hidden (Settings › General). While hidden, launching Keystone again opens Settings, and the app appears in the Dock only while the Settings window is open — the same arrangement as its siblings.
+
+### Fixed
+
+- ⌘W, ⌘Q, and ⌘, now work in the Settings window: the accessory app was missing the main menu that dispatches key equivalents.
+
 ## 1.0.7
 
 ### Fixed

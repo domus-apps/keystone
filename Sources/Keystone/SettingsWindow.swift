@@ -258,6 +258,10 @@ final class GeneralPaneViewController: NSViewController {
         checkboxWithTitle: "Remap Caps Lock to:", target: self,
         action: #selector(toggleRemap))
 
+    private lazy var hideMenuBarIconCheckbox = NSButton(
+        checkboxWithTitle: "Hide menu bar icon", target: self,
+        action: #selector(toggleHideMenuBarIcon))
+
     /* Each spare function key by name; the selection maps back through
        representedObject. */
     private lazy var keyPopUp: NSPopUpButton = {
@@ -315,6 +319,13 @@ final class GeneralPaneViewController: NSViewController {
             action: #selector(openKeyboardSettings))
         views.append(openShortcuts)
 
+        hideMenuBarIconCheckbox.state = AppPreferences.isMenuBarIconHidden ? .on : .off
+        views.append(hideMenuBarIconCheckbox)
+        let hideNote = note(
+            "While hidden, launch Keystone again to open Settings. "
+                + "The app appears in the Dock only while this window is open.")
+        views.append(hideNote)
+
         /* Updates: mirror the menu bar's Check for Updates here too, the
            suite-standard spot. */
         views.append(updater.makeCheckButton())
@@ -350,10 +361,15 @@ final class GeneralPaneViewController: NSViewController {
         ) { [weak self] _ in
             guard let self else { return }
             self.remapCheckbox.state = AppPreferences.isRemapEnabled ? .on : .off
+            self.hideMenuBarIconCheckbox.state = AppPreferences.isMenuBarIconHidden ? .on : .off
             self.keyPopUp.selectItem(
                 at: KeyRemap.FunctionKey.allCases.firstIndex(of: AppPreferences.destination)
                     ?? 0)
         }
+    }
+
+    @objc private func toggleHideMenuBarIcon() {
+        AppPreferences.isMenuBarIconHidden.toggle()
     }
 
     /* Toggle the preference rather than reading the checkbox: the action
