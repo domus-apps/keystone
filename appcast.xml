@@ -144,5 +144,26 @@
         sparkle:edSignature="Ee80DtGJZ3MBMOEQ+znjlob+9ypHrXrHmThjUCLf8V/TAERn/kZt0rFqI3rR95SQ9X8IkdfwvZ/3bpSf/EmEDQ==" length="2924264"
         type="application/octet-stream"/>
     </item>
+    <item>
+      <title>Keystone v1.1.0</title>
+      <link>https://github.com/domus-apps/keystone/releases/tag/v1.1.0</link>
+      <pubDate>Sun, 30 Aug 2026 00:25:50 +0000</pubDate>
+      <description><![CDATA[
+<h3>Added</h3>
+<ul>
+<li>The menu bar icon can be hidden (Settings › General). While hidden, launching Keystone again opens Settings, and the app appears in the Dock only while the Settings window is open — the same arrangement as its siblings.</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>⌘W, ⌘Q, and ⌘, now work in the Settings window: the accessory app was missing the main menu that dispatches key equivalents.</li>
+</ul>      ]]></description>
+      <sparkle:version>9</sparkle:version>
+      <sparkle:shortVersionString>1.1.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/keystone/releases/download/v1.1.0/Keystone.zip"
+        sparkle:edSignature="l9vhqYnqefdzKg/XFYQvIuDpzFglZ4sep2ox63v3nlMpy12/YxbnXK9KON4nXymrDFd/+dlIIQb+sYyM6MpfDg==" length="2926837"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
