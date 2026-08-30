@@ -165,5 +165,23 @@
         sparkle:edSignature="l9vhqYnqefdzKg/XFYQvIuDpzFglZ4sep2ox63v3nlMpy12/YxbnXK9KON4nXymrDFd/+dlIIQb+sYyM6MpfDg==" length="2926837"
         type="application/octet-stream"/>
     </item>
+    <item>
+      <title>Keystone v1.2.0</title>
+      <link>https://github.com/domus-apps/keystone/releases/tag/v1.2.0</link>
+      <pubDate>Sun, 30 Aug 2026 00:42:35 +0000</pubDate>
+      <description><![CDATA[
+<h3>Changed</h3>
+<ul>
+<li>Settings is now two panes: the Caps Lock toggle, destination key, and the Keyboard Settings shortcut moved to their own Remapping pane in the sidebar, leaving General to launch-at-login, the menu bar icon, and updates.</li>
+<li>The version and build number under Check for Updates now show in development builds too (as "Version dev").</li>
+</ul>      ]]></description>
+      <sparkle:version>10</sparkle:version>
+      <sparkle:shortVersionString>1.2.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/keystone/releases/download/v1.2.0/Keystone.zip"
+        sparkle:edSignature="PjZA4998QYN0Tu1QzuRqOfLwlDwvaAowLTl99tiSLq6O4x2qgUMEZR/IKv11Bxo4XP3oH9qlZNw1qyA5wCyLAA==" length="2928150"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
