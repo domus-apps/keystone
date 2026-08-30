@@ -4,6 +4,12 @@ All notable changes to Keystone are documented here. The release workflow publis
 
 Keep each bullet on a single line: release notes render line breaks literally (both on GitHub and in the update dialog), so wrapped lines would break mid-sentence.
 
+## 1.2.1
+
+### Added
+
+- Spotlight now finds the app by its Korean name and by what it does — 키스톤, 한영 전환, 한영키, 캡스락, and caps lock all match.
+
 ## 1.2.0
 
 ### Changed
