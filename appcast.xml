@@ -243,5 +243,29 @@
         sparkle:edSignature="IyfD3T4NZnSwyzUDfS6WGvrdxmoPT8c9n3bbjnEgWh7c+HWp5wxKy2zZk93v5W+x6LuRmwn1gxOj3xxa+gapBg==" length="2970653"
         type="application/octet-stream"/>
     </item>
+    <item>
+      <title>Keystone v1.5.0</title>
+      <link>https://github.com/domus-apps/keystone/releases/tag/v1.5.0</link>
+      <pubDate>Mon, 31 Aug 2026 07:57:55 +0000</pubDate>
+      <description xml:lang="en"><![CDATA[
+<h3>Added</h3>
+<ul>
+<li>Hold for real Caps Lock (Settings › Remapping, off by default): hold the remapped key for about half a second to toggle actual Caps Lock — uppercase, keyboard LED and all, just like the key used to. Quick taps keep switching the input source the instant you press, and once Caps Lock is engaged only another hold turns it off. Needs the Input Monitoring permission.</li>
+<li>The app now speaks Korean — menus, Settings, and onboarding follow the macOS language, with English everywhere else.</li>
+</ul>      ]]></description>
+      <description xml:lang="ko"><![CDATA[
+<h3>추가</h3>
+<ul>
+<li>길게 눌러 실제 Caps Lock (설정 › 리맵, 기본 꺼짐): 리맵된 키를 반 초쯤 누르고 있으면 실제 Caps Lock이 토글됩니다 — 대문자, 키보드 LED까지 원래 키 그대로. 짧은 탭은 지금처럼 누르는 순간 바로 입력 소스를 전환하고, 한 번 켜진 Caps Lock은 다시 길게 눌러야만 꺼집니다. 입력 모니터링 권한이 필요합니다.</li>
+<li>앱이 한국어를 지원합니다 — 메뉴, 설정, 온보딩이 macOS 언어를 따라가며, 그 외 언어에서는 영어로 표시됩니다.</li>
+</ul>      ]]></description>
+      <sparkle:version>14</sparkle:version>
+      <sparkle:shortVersionString>1.5.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/keystone/releases/download/v1.5.0/Keystone.zip"
+        sparkle:edSignature="/U1uJGBuOoYmZ5uns3TlsFvH4i2aUm+oL5XfAe3Ae6hI1fm7Z1ePktMkYiyHCNc/xxzuExc5bRd0nONpyij5AQ==" length="2987370"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
