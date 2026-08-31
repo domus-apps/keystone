@@ -378,6 +378,50 @@ struct RemapSettingsView: View {
                     }
                 }
                 .disabled(!AppPreferences.isRemapEnabled)
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Toggle(
+                        L("Hold for real Caps Lock"),
+                        isOn: model.binding(
+                            { AppPreferences.isHoldForCapsLockEnabled },
+                            { enabled in
+                                AppPreferences.isHoldForCapsLockEnabled = enabled
+                                if enabled, !HoldForCapsMonitor.hasPermission {
+                                    HoldForCapsMonitor.requestPermission()
+                                }
+                            }))
+                    .disabled(!AppPreferences.isRemapEnabled)
+                    Text(L(
+                        "Hold the key for about half a second to toggle actual Caps "
+                            + "Lock — uppercase, keyboard LED and all, just like the key "
+                            + "used to. Quick taps keep switching the instant you press, "
+                            + "exactly as before. A hold switches at first too, then hops "
+                            + "back to the language the press started on as Caps Lock "
+                            + "engages — a brief flicker of the input menu is the only "
+                            + "trace."
+                    ))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                }
+
+                if AppPreferences.isHoldForCapsLockEnabled,
+                    !HoldForCapsMonitor.hasPermission
+                {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(L(
+                            "Watching for the hold needs the Input Monitoring "
+                                + "permission — the same one the lone-tap switches below "
+                                + "use. Until it's granted, switching keeps working as "
+                                + "usual and holding does nothing."
+                        ))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        Button(L("Open Privacy & Security Settings…")) {
+                            openSettingsURL(
+                                "com.apple.preference.security?Privacy_ListenEvent")
+                        }
+                    }
+                }
             } header: {
                 Text(L("Caps Lock"))
             } footer: {

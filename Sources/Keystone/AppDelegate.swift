@@ -4,6 +4,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem?
     private let engine = RemapEngine()
     private let commandTapMonitor = CommandTapMonitor()
+    private let holdForCapsMonitor = HoldForCapsMonitor()
     private let updater = UpdaterController()
     private var settingsWindowController: SettingsWindowController?
     private var onboardingController: OnboardingWindowController?
@@ -104,6 +105,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             if !commandTapMonitor.start() {
                 NSLog("Keystone: event tap unavailable (Input Monitoring not granted?)")
             }
+        }
+
+        /* Hold-for-Caps-Lock only observes the remapped key: taps stay
+           key-down instant; a hold toggles the real Caps Lock and hops the
+           input source back to where the press started. */
+        if AppPreferences.isRemapEnabled, AppPreferences.isHoldForCapsLockEnabled {
+            holdForCapsMonitor.keyCode = destination.keyCode
+            if !holdForCapsMonitor.start() {
+                NSLog("Keystone: hold-for-Caps-Lock tap unavailable (Input Monitoring not granted?)")
+            }
+        } else {
+            holdForCapsMonitor.stop()
         }
 
         toggleItem?.state = AppPreferences.isRemapEnabled ? .on : .off

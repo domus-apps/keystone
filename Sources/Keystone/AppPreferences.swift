@@ -128,6 +128,18 @@ enum AppPreferences {
         }
     }
 
+    private static let holdForCapsLockKey = "pref.holdForCapsLock"
+
+    /* Off by default on purpose: distinguishing a tap from a hold costs
+       the tap its key-down instancy (see HoldForCapsMonitor). */
+    static var isHoldForCapsLockEnabled: Bool {
+        get { UserDefaults.standard.bool(forKey: holdForCapsLockKey) }
+        set {
+            UserDefaults.standard.set(newValue, forKey: holdForCapsLockKey)
+            NotificationCenter.default.post(name: changed, object: nil)
+        }
+    }
+
     /* Falls back to the conventional F19 for unset or unrecognized values. */
     static var destination: KeyRemap.FunctionKey {
         get {

@@ -22,6 +22,21 @@ enum KeyRemap {
         }
 
         var title: String { rawValue.uppercased() }
+
+        /// The key's virtual keycode (kVK_F13…kVK_F20) — what a CGEvent
+        /// for the remapped key carries, for the hold-for-Caps-Lock tap.
+        var keyCode: Int64 {
+            switch self {
+            case .f13: 105
+            case .f14: 107
+            case .f15: 113
+            case .f16: 106
+            case .f17: 64
+            case .f18: 79
+            case .f19: 80
+            case .f20: 90
+            }
+        }
     }
 
     /// The `hidutil property --set` argument mapping Caps Lock to `key`.

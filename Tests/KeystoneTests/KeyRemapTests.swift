@@ -55,3 +55,10 @@ import Testing
     #expect(KeyRemap.FunctionKey.f19.title == "F19")
     #expect(KeyRemap.FunctionKey.allCases.count == 8)
 }
+
+@Test func functionKeyKeycodesMatchTheVirtualKeyTable() {
+    #expect(KeyRemap.FunctionKey.f13.keyCode == 105)
+    #expect(KeyRemap.FunctionKey.f17.keyCode == 64)
+    #expect(KeyRemap.FunctionKey.f19.keyCode == 80)
+    #expect(KeyRemap.FunctionKey.f20.keyCode == 90)
+}

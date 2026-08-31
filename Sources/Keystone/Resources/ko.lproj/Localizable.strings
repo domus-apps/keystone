@@ -25,7 +25,10 @@
 /* 설정 — 리맵 */
 "Caps Lock" = "Caps Lock";
 "Destination key" = "대상 키";
+"Hold for real Caps Lock" = "길게 눌러 실제 Caps Lock";
+"Hold the key for about half a second to toggle actual Caps Lock — uppercase, keyboard LED and all, just like the key used to. Quick taps keep switching the instant you press, exactly as before. A hold switches at first too, then hops back to the language the press started on as Caps Lock engages — a brief flicker of the input menu is the only trace." = "키를 반 초쯤 누르고 있으면 실제 Caps Lock이 토글됩니다 — 대문자, 키보드 LED까지 원래 키 그대로. 짧은 탭은 지금처럼 누르는 순간 바로 전환됩니다. 길게 누르면 처음엔 전환되지만, Caps Lock이 걸리는 순간 누르기 시작한 언어로 되돌아갑니다 — 입력 메뉴가 잠깐 깜빡이는 것이 유일한 흔적입니다.";
 "The remap lives in macOS's HID system — instant, and no process touches your keystrokes. Turning it off, or quitting Keystone, restores stock Caps Lock immediately." = "리맵은 macOS의 HID 시스템 안에 존재합니다 — 즉각적이고, 어떤 프로세스도 키 입력을 건드리지 않습니다. 끄거나 Keystone을 종료하면 곧바로 순정 Caps Lock으로 돌아갑니다.";
+"Watching for the hold needs the Input Monitoring permission — the same one the lone-tap switches below use. Until it's granted, switching keeps working as usual and holding does nothing." = "길게 누르기를 감지하려면 입력 모니터링 권한이 필요합니다 — 아래의 단독 탭 전환과 같은 권한입니다. 허용 전까지 전환은 평소처럼 동작하고, 길게 누르기는 아무 일도 하지 않습니다.";
 "Input source shortcut" = "입력 소스 단축키";
 "Open Keyboard Settings…" = "키보드 설정 열기…";
 "For delay-free input switching, bind the shortcut to the same key: System Settings › Keyboard › Keyboard Shortcuts… › Input Sources › “Select next source in Input menu”, then press Caps Lock to record it." = "지연 없는 입력 소스 전환을 위해 같은 키에 단축키를 지정하세요: 시스템 설정 › 키보드 › 키보드 단축키… › 입력 소스 › “입력 메뉴에서 다음 소스 선택”에서 Caps Lock을 누르면 기록됩니다.";
