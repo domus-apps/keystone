@@ -10,7 +10,7 @@ final class OnboardingWindowController: NSWindowController, NSWindowDelegate {
     private let onComplete: () -> Void
 
     private lazy var startButton = NSButton(
-        title: "Start Using Keystone", target: self, action: #selector(start))
+        title: L("Start Using Keystone"), target: self, action: #selector(start))
 
     init(onComplete: @escaping () -> Void) {
         self.onComplete = onComplete
@@ -42,15 +42,15 @@ final class OnboardingWindowController: NSWindowController, NSWindowDelegate {
     // MARK: - Content
 
     private func makeContent() -> NSView {
-        let title = NSTextField(labelWithString: "Welcome to Keystone")
+        let title = NSTextField(labelWithString: L("Welcome to Keystone"))
         title.font = .systemFont(ofSize: 30, weight: .bold)
 
         let intro = NSTextField(
-            wrappingLabelWithString:
+            wrappingLabelWithString: L(
                 "Keystone turns Caps Lock into an instant input-source switch. "
-                + "It reroutes Caps Lock to a spare key (F19) inside macOS itself — "
-                + "no driver, no keystroke interception, and none of Caps Lock's "
-                + "built-in delay.")
+                    + "It reroutes Caps Lock to a spare key (F19) inside macOS itself — "
+                    + "no driver, no keystroke interception, and none of Caps Lock's "
+                    + "built-in delay."))
         intro.font = .systemFont(ofSize: 14)
         intro.textColor = .secondaryLabelColor
         intro.alignment = .center
@@ -64,17 +64,17 @@ final class OnboardingWindowController: NSWindowController, NSWindowDelegate {
         ])
 
         let step = NSTextField(
-            wrappingLabelWithString:
+            wrappingLabelWithString: L(
                 "One step to finish in System Settings › Keyboard › Keyboard "
-                + "Shortcuts… › Input Sources: set “Select next source in Input "
-                + "menu” by pressing Caps Lock — it already types F19.")
+                    + "Shortcuts… › Input Sources: set “Select next source in Input "
+                    + "menu” by pressing Caps Lock — it already types F19."))
         step.font = .systemFont(ofSize: 13)
         step.textColor = .secondaryLabelColor
         step.alignment = .center
         step.preferredMaxLayoutWidth = 470
 
         let openButton = NSButton(
-            title: "Open Keyboard Settings…", target: self,
+            title: L("Open Keyboard Settings…"), target: self,
             action: #selector(openKeyboardSettings))
 
         startButton.bezelStyle = .rounded
@@ -211,7 +211,7 @@ private final class OnboardingIllustrationView: NSView {
 
         // Caption under the flow
         let caption = NSAttributedString(
-            string: "rerouted in macOS · zero delay",
+            string: L("rerouted in macOS · zero delay"),
             attributes: [
                 .font: NSFont.systemFont(ofSize: 11),
                 .foregroundColor: NSColor.white.withAlphaComponent(0.45),

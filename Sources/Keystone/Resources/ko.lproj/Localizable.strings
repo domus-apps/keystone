@@ -1,0 +1,49 @@
+/* Keystone 한국어 — 영어 원문이 키입니다 (Localization.swift 참고) */
+
+/* 메뉴 */
+"Remap Caps Lock" = "Caps Lock 리맵";
+"Remap Caps Lock to %@" = "Caps Lock을 %@ 키로 리맵";
+"Settings…" = "설정…";
+"Check for Updates…" = "업데이트 확인…";
+"Quit Keystone" = "Keystone 종료";
+"Window" = "윈도우";
+"Close Window" = "윈도우 닫기";
+"Minimize" = "축소";
+
+/* 설정 — 공통 */
+"General" = "일반";
+"Remapping" = "리맵";
+
+/* 설정 — 일반 */
+"Launch at login" = "로그인 시 실행";
+"Available in the bundled app only (Scripts/bundle.sh)." = "번들 앱에서만 사용할 수 있습니다 (Scripts/bundle.sh).";
+"Hide menu bar icon" = "메뉴 막대 아이콘 숨기기";
+"While hidden, launch Keystone again to open Settings. The app appears in the Dock only while this window is open." = "숨긴 동안에는 Keystone을 다시 실행하면 설정이 열립니다. 이 창이 열려 있는 동안에만 앱이 Dock에 나타납니다.";
+"Updates" = "업데이트";
+"Version" = "버전";
+
+/* 설정 — 리맵 */
+"Caps Lock" = "Caps Lock";
+"Destination key" = "대상 키";
+"The remap lives in macOS's HID system — instant, and no process touches your keystrokes. Turning it off, or quitting Keystone, restores stock Caps Lock immediately." = "리맵은 macOS의 HID 시스템 안에 존재합니다 — 즉각적이고, 어떤 프로세스도 키 입력을 건드리지 않습니다. 끄거나 Keystone을 종료하면 곧바로 순정 Caps Lock으로 돌아갑니다.";
+"Input source shortcut" = "입력 소스 단축키";
+"Open Keyboard Settings…" = "키보드 설정 열기…";
+"For delay-free input switching, bind the shortcut to the same key: System Settings › Keyboard › Keyboard Shortcuts… › Input Sources › “Select next source in Input menu”, then press Caps Lock to record it." = "지연 없는 입력 소스 전환을 위해 같은 키에 단축키를 지정하세요: 시스템 설정 › 키보드 › 키보드 단축키… › 입력 소스 › “입력 메뉴에서 다음 소스 선택”에서 Caps Lock을 누르면 기록됩니다.";
+"Switch input source when tapped alone" = "단독 탭으로 입력 소스 전환";
+"A modifier pressed and released with nothing else in between switches the input source — to the next one, or to the one you pick per key; every shortcut using it keeps working. Watching for that lone tap is the one Keystone feature that observes keys, so it needs the Input Monitoring permission." = "다른 키 없이 수정자 키만 눌렀다 떼면 입력 소스가 전환됩니다 — 다음 소스로, 또는 키마다 지정한 소스로. 해당 키를 쓰는 단축키는 모두 그대로 동작합니다. 단독 탭을 지켜보는 것이 Keystone에서 유일하게 키를 관찰하는 기능이라, 입력 모니터링 권한이 필요합니다.";
+"Off" = "끔";
+"Next input source" = "다음 입력 소스";
+"%@ (not enabled)" = "%@ (비활성)";
+"Input Monitoring isn't granted yet — allow Keystone under Privacy & Security › Input Monitoring. The system prompt appears only on the first ask." = "아직 입력 모니터링이 허용되지 않았습니다 — 개인정보 보호 및 보안 › 입력 모니터링에서 Keystone을 허용해 주세요. 시스템 프롬프트는 처음 요청할 때 한 번만 나타납니다.";
+"Open Privacy & Security Settings…" = "개인정보 보호 및 보안 설정 열기…";
+"Left ⌘" = "왼쪽 ⌘";
+"Right ⌘" = "오른쪽 ⌘";
+"Left ⌥" = "왼쪽 ⌥";
+"Right ⌥" = "오른쪽 ⌥";
+
+/* 온보딩 */
+"Welcome to Keystone" = "Keystone에 오신 것을 환영합니다";
+"Keystone turns Caps Lock into an instant input-source switch. It reroutes Caps Lock to a spare key (F19) inside macOS itself — no driver, no keystroke interception, and none of Caps Lock's built-in delay." = "Keystone은 Caps Lock을 즉각적인 입력 소스 전환 키로 만듭니다. macOS 내부에서 Caps Lock을 여분의 키(F19)로 돌려보내는 방식이라 — 드라이버도, 키 입력 가로채기도 없고, Caps Lock 특유의 지연도 없습니다.";
+"One step to finish in System Settings › Keyboard › Keyboard Shortcuts… › Input Sources: set “Select next source in Input menu” by pressing Caps Lock — it already types F19." = "시스템 설정 › 키보드 › 키보드 단축키… › 입력 소스에서 한 단계만 마치면 됩니다: “입력 메뉴에서 다음 소스 선택”에 Caps Lock을 눌러 지정하세요 — 이미 F19로 입력됩니다.";
+"Start Using Keystone" = "Keystone 시작하기";
+"rerouted in macOS · zero delay" = "macOS 안에서 재배선 · 지연 없음";

@@ -10,8 +10,8 @@ enum SettingsPane: Int, CaseIterable {
 
     var title: String {
         switch self {
-        case .general: "General"
-        case .remap: "Remapping"
+        case .general: L("General")
+        case .remap: L("Remapping")
         }
     }
 
@@ -314,12 +314,12 @@ struct GeneralSettingsView: View {
             Section {
                 VStack(alignment: .leading, spacing: 3) {
                     Toggle(
-                        "Launch at login",
+                        L("Launch at login"),
                         isOn: model.binding({ model.launchAtLogin }, { model.launchAtLogin = $0 })
                     )
                     .disabled(!model.isBundledApp)
                     if !model.isBundledApp {
-                        Text("Available in the bundled app only (Scripts/bundle.sh).")
+                        Text(L("Available in the bundled app only (Scripts/bundle.sh)."))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -327,22 +327,24 @@ struct GeneralSettingsView: View {
 
                 VStack(alignment: .leading, spacing: 3) {
                     Toggle(
-                        "Hide menu bar icon",
+                        L("Hide menu bar icon"),
                         isOn: model.binding(
                             { AppPreferences.isMenuBarIconHidden },
                             { AppPreferences.isMenuBarIconHidden = $0 }))
                     Text(
-                        "While hidden, launch Keystone again to open Settings. The app "
-                            + "appears in the Dock only while this window is open."
+                        L(
+                            "While hidden, launch Keystone again to open Settings. The "
+                                + "app appears in the Dock only while this window is open."
+                        )
                     )
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 }
             }
 
-            Section("Updates") {
-                LabeledContent("Version", value: model.versionLabel)
-                Button("Check for Updates…") {
+            Section(L("Updates")) {
+                LabeledContent(L("Version"), value: model.versionLabel)
+                Button(L("Check for Updates…")) {
                     model.updater.checkForUpdates()
                 }
                 .disabled(!model.updater.canCheckForUpdates)
@@ -361,12 +363,12 @@ struct RemapSettingsView: View {
         Form {
             Section {
                 Toggle(
-                    "Remap Caps Lock",
+                    L("Remap Caps Lock"),
                     isOn: model.binding(
                         { AppPreferences.isRemapEnabled },
                         { AppPreferences.isRemapEnabled = $0 }))
                 Picker(
-                    "Destination key",
+                    L("Destination key"),
                     selection: model.binding(
                         { AppPreferences.destination },
                         { AppPreferences.destination = $0 })
@@ -377,33 +379,33 @@ struct RemapSettingsView: View {
                 }
                 .disabled(!AppPreferences.isRemapEnabled)
             } header: {
-                Text("Caps Lock")
+                Text(L("Caps Lock"))
             } footer: {
-                Text(
+                Text(L(
                     "The remap lives in macOS's HID system — instant, and no process "
                         + "touches your keystrokes. Turning it off, or quitting Keystone, "
-                        + "restores stock Caps Lock immediately.")
+                        + "restores stock Caps Lock immediately."))
             }
 
             Section {
-                Button("Open Keyboard Settings…") {
+                Button(L("Open Keyboard Settings…")) {
                     openSettingsURL("com.apple.Keyboard-Settings.extension")
                 }
             } header: {
-                Text("Input source shortcut")
+                Text(L("Input source shortcut"))
             } footer: {
-                Text(
+                Text(L(
                     "For delay-free input switching, bind the shortcut to the same key: "
                         + "System Settings › Keyboard › Keyboard Shortcuts… › Input "
                         + "Sources › “Select next source in Input menu”, then press "
-                        + "Caps Lock to record it.")
+                        + "Caps Lock to record it."))
             }
 
             Section {
                 ForEach(AppPreferences.TapKey.allCases, id: \.self) { key in
                     Picker(key.title, selection: tapBinding(for: key)) {
-                        Text("Off").tag("off")
-                        Text("Next input source").tag(AppPreferences.TapAction.toggle.stored)
+                        Text(L("Off")).tag("off")
+                        Text(L("Next input source")).tag(AppPreferences.TapAction.toggle.stored)
                         Divider()
                         ForEach(model.enabledSources, id: \.id) { source in
                             Text(source.name)
@@ -415,7 +417,7 @@ struct RemapSettingsView: View {
                         if case .select(let sourceID) = AppPreferences.tapActions[key],
                             !model.enabledSources.contains(where: { $0.id == sourceID })
                         {
-                            Text("\(sourceID) (not enabled)")
+                            Text(L("%@ (not enabled)", sourceID))
                                 .tag(AppPreferences.TapAction.select(sourceID: sourceID).stored)
                         }
                     }
@@ -423,27 +425,27 @@ struct RemapSettingsView: View {
 
                 if !AppPreferences.tapActions.isEmpty, !CommandTapMonitor.hasPermission {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text(
+                        Text(L(
                             "Input Monitoring isn't granted yet — allow Keystone under "
                                 + "Privacy & Security › Input Monitoring. The system prompt "
                                 + "appears only on the first ask."
-                        )
+                        ))
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                        Button("Open Privacy & Security Settings…") {
+                        Button(L("Open Privacy & Security Settings…")) {
                             openSettingsURL("com.apple.preference.security?Privacy_ListenEvent")
                         }
                     }
                 }
             } header: {
-                Text("Switch input source when tapped alone")
+                Text(L("Switch input source when tapped alone"))
             } footer: {
-                Text(
+                Text(L(
                     "A modifier pressed and released with nothing else in between "
                         + "switches the input source — to the next one, or to the one you "
                         + "pick per key; every shortcut using it keeps working. Watching "
                         + "for that lone tap is the one Keystone feature that observes "
-                        + "keys, so it needs the Input Monitoring permission.")
+                        + "keys, so it needs the Input Monitoring permission."))
             }
         }
         .formStyle(.grouped)

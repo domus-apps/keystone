@@ -11,6 +11,10 @@ mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp .build/release/Keystone "$APP/Contents/MacOS/Keystone"
 cp Scripts/Info.plist "$APP/Contents/Info.plist"
 
+# Localizations: SwiftPM packs the .lproj string tables into a resource
+# bundle that Bundle.module finds inside Contents/Resources.
+cp -R .build/release/Keystone_Keystone.bundle "$APP/Contents/Resources/"
+
 # Embed Sparkle.framework (auto-update). The binary references it via
 # @rpath/../Frameworks (see Package.swift linkerSettings).
 SPARKLE=$(find .build/artifacts -type d -name Sparkle.framework -path "*macos*" | head -1)

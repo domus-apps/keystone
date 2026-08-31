@@ -38,10 +38,10 @@ enum AppPreferences {
 
         var title: String {
             switch self {
-            case .leftCommand: "Left ⌘"
-            case .rightCommand: "Right ⌘"
-            case .leftOption: "Left ⌥"
-            case .rightOption: "Right ⌥"
+            case .leftCommand: L("Left ⌘")
+            case .rightCommand: L("Right ⌘")
+            case .leftOption: L("Left ⌥")
+            case .rightOption: L("Right ⌥")
             }
         }
     }

@@ -107,7 +107,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         toggleItem?.state = AppPreferences.isRemapEnabled ? .on : .off
-        toggleItem?.title = "Remap Caps Lock to \(destination.title)"
+        toggleItem?.title = L("Remap Caps Lock to %@", destination.title)
     }
 
     private func showOnboarding() {
@@ -141,24 +141,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func setUpMainMenu() {
         let appMenu = NSMenu()
         let settingsItem = NSMenuItem(
-            title: "Settings…", action: #selector(openSettings), keyEquivalent: ",")
+            title: L("Settings…"), action: #selector(openSettings), keyEquivalent: ",")
         settingsItem.target = self
         appMenu.addItem(settingsItem)
         appMenu.addItem(updater.makeMenuItem())
         appMenu.addItem(.separator())
         appMenu.addItem(
             NSMenuItem(
-                title: "Quit Keystone",
+                title: L("Quit Keystone"),
                 action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
 
-        let windowMenu = NSMenu(title: "Window")
+        let windowMenu = NSMenu(title: L("Window"))
         windowMenu.addItem(
             NSMenuItem(
-                title: "Close Window",
+                title: L("Close Window"),
                 action: #selector(NSWindow.performClose(_:)), keyEquivalent: "w"))
         windowMenu.addItem(
             NSMenuItem(
-                title: "Minimize",
+                title: L("Minimize"),
                 action: #selector(NSWindow.performMiniaturize(_:)), keyEquivalent: "m"))
 
         let mainMenu = NSMenu()
@@ -220,18 +220,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(about)
         menu.addItem(.separator())
         let toggle = NSMenuItem(
-            title: "Remap Caps Lock", action: #selector(toggleRemap), keyEquivalent: "")
+            title: L("Remap Caps Lock"), action: #selector(toggleRemap), keyEquivalent: "")
         toggle.target = self
         menu.addItem(toggle)
         toggleItem = toggle
         let settings = NSMenuItem(
-            title: "Settings…", action: #selector(openSettings), keyEquivalent: ",")
+            title: L("Settings…"), action: #selector(openSettings), keyEquivalent: ",")
         settings.target = self
         menu.addItem(settings)
         menu.addItem(updater.makeMenuItem())
         menu.addItem(.separator())
         menu.addItem(NSMenuItem(
-            title: "Quit Keystone",
+            title: L("Quit Keystone"),
             action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         item.menu = menu
         statusItem = item
