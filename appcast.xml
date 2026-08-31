@@ -222,5 +222,26 @@
         sparkle:edSignature="0umw5ose+qqLaVIIUy9z8Ip6P11eTvNCuK18+xRHvRfRZVvsFEsBqrEfp+nNO0qbos06t1LMQPmh3dRjuRTmAw==" length="2939697"
         type="application/octet-stream"/>
     </item>
+    <item>
+      <title>Keystone v1.4.0</title>
+      <link>https://github.com/domus-apps/keystone/releases/tag/v1.4.0</link>
+      <pubDate>Mon, 31 Aug 2026 00:56:38 +0000</pubDate>
+      <description><![CDATA[
+<h3>Added</h3>
+<ul>
+<li>Each tap key can now jump to a specific input source instead of cycling — pick any enabled source per key in Settings, e.g. left ⌘ for ABC and right ⌘ for 2-Set Korean. Existing tap settings carry over as "Next input source".</li>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>Settings redesigned in the system's grouped style — section headers, rounded boxes, and switches, like Xcode's settings.</li>
+</ul>      ]]></description>
+      <sparkle:version>13</sparkle:version>
+      <sparkle:shortVersionString>1.4.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/keystone/releases/download/v1.4.0/Keystone.zip"
+        sparkle:edSignature="IyfD3T4NZnSwyzUDfS6WGvrdxmoPT8c9n3bbjnEgWh7c+HWp5wxKy2zZk93v5W+x6LuRmwn1gxOj3xxa+gapBg==" length="2970653"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
