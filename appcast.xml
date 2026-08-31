@@ -200,5 +200,27 @@
         sparkle:edSignature="FdgjRbEFYVRc2IxLzsmAuaXO5SV1senJKAKPf/7wFdCegcD/g7Wp/2c5UL+LxwNBP3qtkAlPHMAYFwG7TkzQCA==" length="2928272"
         type="application/octet-stream"/>
     </item>
+    <item>
+      <title>Keystone v1.3.0</title>
+      <link>https://github.com/domus-apps/keystone/releases/tag/v1.3.0</link>
+      <pubDate>Mon, 31 Aug 2026 00:30:51 +0000</pubDate>
+      <description><![CDATA[
+<h3>Added</h3>
+<ul>
+<li>Tap a ⌘ or ⌥ key on its own to switch the input source — left, right, or both sides of each, chosen in Settings. Every shortcut using the key keeps working: a lone press-and-release is the whole gesture.</li>
+<li>Watching for that tap is the one Keystone feature that observes keys, so it asks for the Input Monitoring permission — and only once it's turned on.</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>Settings panes now scroll when their content is taller than the window.</li>
+</ul>      ]]></description>
+      <sparkle:version>12</sparkle:version>
+      <sparkle:shortVersionString>1.3.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/keystone/releases/download/v1.3.0/Keystone.zip"
+        sparkle:edSignature="0umw5ose+qqLaVIIUy9z8Ip6P11eTvNCuK18+xRHvRfRZVvsFEsBqrEfp+nNO0qbos06t1LMQPmh3dRjuRTmAw==" length="2939697"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
