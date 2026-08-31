@@ -4,6 +4,13 @@ All notable changes to Keystone are documented here. The release workflow publis
 
 Keep each bullet on a single line: release notes render line breaks literally (both on GitHub and in the update dialog), so wrapped lines would break mid-sentence.
 
+## 1.5.0
+
+### Added
+
+- Hold for real Caps Lock (Settings › Remapping, off by default): hold the remapped key for about half a second to toggle actual Caps Lock — uppercase, keyboard LED and all, just like the key used to. Quick taps keep switching the input source the instant you press, and once Caps Lock is engaged only another hold turns it off. Needs the Input Monitoring permission.
+- The app now speaks Korean — menus, Settings, and onboarding follow the macOS language, with English everywhere else.
+
 ## 1.4.0
 
 ### Added
