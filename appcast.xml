@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Sparkle update feed. Release entries are appended automatically by the
-     release workflow (Scripts/appcast-add.sh) — don't edit by hand. -->
+     release workflow (Scripts/appcast-add.sh) — don't edit by hand.
+     (Touched once on 2026-08-31 to displace a stuck 400 cached by
+     raw.githubusercontent.com for this file's URL.) -->
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
   <channel>
     <title>Keystone</title>
