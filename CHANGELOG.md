@@ -4,6 +4,12 @@ All notable changes to Keystone are documented here. The release workflow publis
 
 Keep each bullet on a single line: release notes render line breaks literally (both on GitHub and in the update dialog), so wrapped lines would break mid-sentence.
 
+## 1.5.1
+
+### Fixed
+
+- 1.5.0 crashed on launch: the release toolchain generates a stricter localization-bundle lookup than the one the app was tested against, and it never checked Contents/Resources. The bundle is now resolved explicitly, so the lookup works regardless of the toolchain that built the app.
+
 ## 1.5.0
 
 ### Added
