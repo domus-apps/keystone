@@ -269,5 +269,27 @@
         sparkle:edSignature="/U1uJGBuOoYmZ5uns3TlsFvH4i2aUm+oL5XfAe3Ae6hI1fm7Z1ePktMkYiyHCNc/xxzuExc5bRd0nONpyij5AQ==" length="2987370"
         type="application/octet-stream"/>
     </item>
+    <item>
+      <title>Keystone v1.5.1</title>
+      <link>https://github.com/domus-apps/keystone/releases/tag/v1.5.1</link>
+      <pubDate>Mon, 31 Aug 2026 10:12:44 +0000</pubDate>
+      <description xml:lang="en"><![CDATA[
+<h3>Fixed</h3>
+<ul>
+<li>1.5.0 crashed on launch: the release toolchain generates a stricter localization-bundle lookup than the one the app was tested against, and it never checked Contents/Resources. The bundle is now resolved explicitly, so the lookup works regardless of the toolchain that built the app.</li>
+</ul>      ]]></description>
+      <description xml:lang="ko"><![CDATA[
+<h3>수정</h3>
+<ul>
+<li>1.5.0이 실행 직후 종료되던 문제를 고쳤습니다: 릴리스 툴체인이 생성하는 로컬라이제이션 번들 탐색 코드가 테스트에 쓰인 것보다 엄격해서 Contents/Resources를 확인하지 않았습니다. 이제 번들을 직접 찾도록 하여 어떤 툴체인으로 빌드해도 동작합니다.</li>
+</ul>      ]]></description>
+      <sparkle:version>15</sparkle:version>
+      <sparkle:shortVersionString>1.5.1</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/keystone/releases/download/v1.5.1/Keystone.zip"
+        sparkle:edSignature="AB1dx3omY5+wRxI9WAUJPOZrFFbcnpGo3zIrFPVp+WZ4FvXl3gC7h9Hy8zDPQ51rLXDa67CQIcv1/TrRITQvBA==" length="2988068"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
