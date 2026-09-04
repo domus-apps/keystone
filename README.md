@@ -51,3 +51,7 @@ swift run                # menu bar app, dev build
   it seamless across restarts.
 - A force-quit or crash can't clean up after itself; the next launch, toggle, or
   reboot sweeps the mapping away.
+
+## License
+
+MIT, see [LICENSE](LICENSE). Bundled third-party software and its licenses are listed in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
