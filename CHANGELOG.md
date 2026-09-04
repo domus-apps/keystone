@@ -15,7 +15,7 @@ Keep each bullet on a single line: release notes render line breaks literally (b
 ### Added
 
 - Hold for real Caps Lock (Settings › Remapping, off by default): hold the remapped key for about half a second to toggle actual Caps Lock, uppercase, keyboard LED and all, just like the key used to. Quick taps keep switching the input source the instant you press, and once Caps Lock is engaged only another hold turns it off. Needs the Input Monitoring permission.
-- The app now speaks Korean: menus, Settings, and onboarding follow the macOS language, with English everywhere else.
+- The app now speaks Korean. Menus, Settings, and onboarding follow the macOS language, with English everywhere else.
 
 ## 1.4.0
 
@@ -25,13 +25,13 @@ Keep each bullet on a single line: release notes render line breaks literally (b
 
 ### Changed
 
-- Settings redesigned in the system's grouped style: section headers, rounded boxes, and switches, like Xcode's settings.
+- Settings redesigned in the system's grouped style, with section headers, rounded boxes, and switches like Xcode's settings.
 
 ## 1.3.0
 
 ### Added
 
-- Tap a ⌘ or ⌥ key on its own to switch the input source: left, right, or both sides of each, chosen in Settings. Every shortcut using the key keeps working: a lone press-and-release is the whole gesture.
+- Tap a ⌘ or ⌥ key on its own to switch the input source. Choose left, right, or both sides of each in Settings. Every shortcut using the key keeps working, since a lone press-and-release is the whole gesture.
 - Watching for that tap is the one Keystone feature that observes keys, so it asks for the Input Monitoring permission, and only once it's turned on.
 
 ### Fixed
@@ -71,7 +71,7 @@ Keep each bullet on a single line: release notes render line breaks literally (b
 
 ### Fixed
 
-- The dark-mode icon lost its glass entirely: the previous fix dimmed the arch image instead of declaring materials. The icon document now declares real Liquid Glass (specular highlights and a translucent frosted arch under the solid keystone), so every appearance keeps the glassy look.
+- The dark-mode icon lost its glass entirely. The previous fix dimmed the arch image instead of declaring materials. The icon document now declares real Liquid Glass (specular highlights and a translucent frosted arch under the solid keystone), so every appearance keeps the glassy look.
 
 ## 1.0.5
 
@@ -96,7 +96,7 @@ Keep each bullet on a single line: release notes render line breaks literally (b
 
 ### Changed
 
-- Quitting Keystone now clears the mapping and returns Caps Lock to stock macOS behavior. The remap is active exactly while the app runs, so what you see in the menu bar is the whole story. Launch at login keeps switching seamless across restarts. (A force-quit can't clean up after itself; the next launch, toggle, or reboot does.)
+- Quitting Keystone now clears the mapping and returns Caps Lock to stock macOS behavior. The remap is active exactly while the app runs, so what you see in the menu bar is the whole story. Launch at login keeps switching seamless across restarts. (A force-quit can't clean up after itself. The next launch, toggle, or reboot does.)
 
 ## 1.0.1
 
