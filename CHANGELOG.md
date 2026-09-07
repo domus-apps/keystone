@@ -4,6 +4,12 @@ All notable changes to Keystone are documented here. The release workflow publis
 
 Keep each bullet on a single line: release notes render line breaks literally (both on GitHub and in the update dialog), so wrapped lines would break mid-sentence.
 
+## 1.5.2
+
+### Fixed
+
+- Fixed steady processor use that began once Settings had been opened and went on after the window was closed.
+
 ## 1.5.1
 
 ### Fixed
