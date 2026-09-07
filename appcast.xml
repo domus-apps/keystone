@@ -291,5 +291,51 @@
         sparkle:edSignature="AB1dx3omY5+wRxI9WAUJPOZrFFbcnpGo3zIrFPVp+WZ4FvXl3gC7h9Hy8zDPQ51rLXDa67CQIcv1/TrRITQvBA==" length="2988068"
         type="application/octet-stream"/>
     </item>
+    <item>
+      <title>Keystone v1.5.2</title>
+      <link>https://github.com/domus-apps/keystone/releases/tag/v1.5.2</link>
+      <pubDate>Mon, 07 Sep 2026 07:12:20 +0000</pubDate>
+      <description xml:lang="en"><![CDATA[
+<h2>1.5.2</h2>
+<h3>Fixed</h3>
+<ul>
+<li>Fixed steady processor use that began once Settings had been opened and went on after the window was closed.</li>
+</ul>
+<h2>1.5.1</h2>
+<h3>Fixed</h3>
+<ul>
+<li>1.5.0 crashed on launch: the release toolchain generates a stricter localization-bundle lookup than the one the app was tested against, and it never checked Contents/Resources. The bundle is now resolved explicitly, so the lookup works regardless of the toolchain that built the app.</li>
+</ul>
+<h2>1.5.0</h2>
+<h3>Added</h3>
+<ul>
+<li>Hold for real Caps Lock (Settings › Remapping, off by default): hold the remapped key for about half a second to toggle actual Caps Lock, uppercase, keyboard LED and all, just like the key used to. Quick taps keep switching the input source the instant you press, and once Caps Lock is engaged only another hold turns it off. Needs the Input Monitoring permission.</li>
+<li>The app now speaks Korean. Menus, Settings, and onboarding follow the macOS language, with English everywhere else.</li>
+</ul>      ]]></description>
+      <description xml:lang="ko"><![CDATA[
+<h2>1.5.2</h2>
+<h3>수정</h3>
+<ul>
+<li>설정 창을 한 번 열면 창을 닫은 뒤에도 CPU를 계속 사용하던 문제를 고쳤습니다.</li>
+</ul>
+<h2>1.5.1</h2>
+<h3>수정</h3>
+<ul>
+<li>1.5.0이 실행 직후 종료되던 문제를 고쳤습니다: 릴리스 툴체인이 생성하는 로컬라이제이션 번들 탐색 코드가 테스트에 쓰인 것보다 엄격해서 Contents/Resources를 확인하지 않았습니다. 이제 번들을 직접 찾도록 하여 어떤 툴체인으로 빌드해도 동작합니다.</li>
+</ul>
+<h2>1.5.0</h2>
+<h3>추가</h3>
+<ul>
+<li>길게 눌러 실제 Caps Lock (설정 › 리맵, 기본 꺼짐): 리맵된 키를 반 초쯤 누르고 있으면 실제 Caps Lock이 토글됩니다. 대문자, 키보드 LED까지 원래 키 그대로. 짧은 탭은 지금처럼 누르는 순간 바로 입력 소스를 전환하고, 한 번 켜진 Caps Lock은 다시 길게 눌러야만 꺼집니다. 입력 모니터링 권한이 필요합니다.</li>
+<li>앱이 한국어를 지원합니다. 메뉴, 설정, 온보딩이 macOS 언어를 따라가며, 그 외 언어에서는 영어로 표시됩니다.</li>
+</ul>      ]]></description>
+      <sparkle:version>16</sparkle:version>
+      <sparkle:shortVersionString>1.5.2</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/keystone/releases/download/v1.5.2/Keystone.zip"
+        sparkle:edSignature="o7QABaIaRjaUtdPAQt7KEPhZdeqDgwN2DZl4ojFY679DhbmIsTroCoEeYcYZdfeGUwNlp7uYe2knF4MB/r2HCg==" length="2988165"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
