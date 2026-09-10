@@ -337,5 +337,49 @@
         sparkle:edSignature="o7QABaIaRjaUtdPAQt7KEPhZdeqDgwN2DZl4ojFY679DhbmIsTroCoEeYcYZdfeGUwNlp7uYe2knF4MB/r2HCg==" length="2988165"
         type="application/octet-stream"/>
     </item>
+    <item>
+      <title>Keystone v1.5.3</title>
+      <link>https://github.com/domus-apps/keystone/releases/tag/v1.5.3</link>
+      <pubDate>Thu, 10 Sep 2026 05:24:05 +0000</pubDate>
+      <description xml:lang="en"><![CDATA[
+<h2>1.5.3</h2>
+<h3>Fixed</h3>
+<ul>
+<li>Closing Settings or the welcome window now returns you to the app you were using, so other apps' shortcuts keep working right away.</li>
+</ul>
+<h2>1.5.2</h2>
+<h3>Fixed</h3>
+<ul>
+<li>Fixed steady processor use that began once Settings had been opened and went on after the window was closed.</li>
+</ul>
+<h2>1.5.1</h2>
+<h3>Fixed</h3>
+<ul>
+<li>1.5.0 crashed on launch: the release toolchain generates a stricter localization-bundle lookup than the one the app was tested against, and it never checked Contents/Resources. The bundle is now resolved explicitly, so the lookup works regardless of the toolchain that built the app.</li>
+</ul>      ]]></description>
+      <description xml:lang="ko"><![CDATA[
+<h2>1.5.3</h2>
+<h3>수정</h3>
+<ul>
+<li>설정 창이나 시작 안내 창을 닫으면 이전에 쓰던 앱으로 바로 돌아가, 다른 앱의 단축키가 곧바로 동작합니다.</li>
+</ul>
+<h2>1.5.2</h2>
+<h3>수정</h3>
+<ul>
+<li>설정 창을 한 번 열면 창을 닫은 뒤에도 CPU를 계속 사용하던 문제를 고쳤습니다.</li>
+</ul>
+<h2>1.5.1</h2>
+<h3>수정</h3>
+<ul>
+<li>1.5.0이 실행 직후 종료되던 문제를 고쳤습니다: 릴리스 툴체인이 생성하는 로컬라이제이션 번들 탐색 코드가 테스트에 쓰인 것보다 엄격해서 Contents/Resources를 확인하지 않았습니다. 이제 번들을 직접 찾도록 하여 어떤 툴체인으로 빌드해도 동작합니다.</li>
+</ul>      ]]></description>
+      <sparkle:version>17</sparkle:version>
+      <sparkle:shortVersionString>1.5.3</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/keystone/releases/download/v1.5.3/Keystone.zip"
+        sparkle:edSignature="hKol7HneKyMiYWz0HyKCmBA+O4cq7EAtCOckLFdAGGzgLsoPWgYWQj+veFRAu0+y1/hiob6ta+/+KFgGKyzHBA==" length="2989380"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
