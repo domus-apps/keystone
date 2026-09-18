@@ -1,8 +1,7 @@
 /* Keystone 한국어 — 영어 원문이 키입니다 (Localization.swift 참고) */
 
 /* 메뉴 */
-"Remap Caps Lock" = "Caps Lock 리맵";
-"Remap Caps Lock to %@" = "Caps Lock을 %@ 키로 리맵";
+"Remap Keys" = "키 리맵";
 "Settings…" = "설정…";
 "Check for Updates…" = "업데이트 확인…";
 "Quit Keystone" = "Keystone 종료";
@@ -23,26 +22,36 @@
 "Version" = "버전";
 
 /* 설정 — 리맵 */
-"Caps Lock" = "Caps Lock";
-"Destination key" = "대상 키";
-"Hold for real Caps Lock" = "길게 눌러 실제 Caps Lock";
-"Hold the key for about half a second to toggle actual Caps Lock — uppercase, keyboard LED and all, just like the key used to. Quick taps keep switching the instant you press, exactly as before. A hold switches at first too, then hops back to the language the press started on as Caps Lock engages — a brief flicker of the input menu is the only trace." = "키를 반 초쯤 누르고 있으면 실제 Caps Lock이 토글됩니다 — 대문자, 키보드 LED까지 원래 키 그대로. 짧은 탭은 지금처럼 누르는 순간 바로 전환됩니다. 길게 누르면 처음엔 전환되지만, Caps Lock이 걸리는 순간 누르기 시작한 언어로 되돌아갑니다 — 입력 메뉴가 잠깐 깜빡이는 것이 유일한 흔적입니다.";
-"The remap lives in macOS's HID system — instant, and no process touches your keystrokes. Turning it off, or quitting Keystone, restores stock Caps Lock immediately." = "리맵은 macOS의 HID 시스템 안에 존재합니다 — 즉각적이고, 어떤 프로세스도 키 입력을 건드리지 않습니다. 끄거나 Keystone을 종료하면 곧바로 순정 Caps Lock으로 돌아갑니다.";
-"Watching for the hold needs the Input Monitoring permission — the same one the lone-tap switches below use. Until it's granted, switching keeps working as usual and holding does nothing." = "길게 누르기를 감지하려면 입력 모니터링 권한이 필요합니다 — 아래의 단독 탭 전환과 같은 권한입니다. 허용 전까지 전환은 평소처럼 동작하고, 길게 누르기는 아무 일도 하지 않습니다.";
-"Input source shortcut" = "입력 소스 단축키";
-"Open Keyboard Settings…" = "키보드 설정 열기…";
-"For delay-free input switching, bind the shortcut to the same key: System Settings › Keyboard › Keyboard Shortcuts… › Input Sources › “Select next source in Input menu”, then press Caps Lock to record it." = "지연 없는 입력 소스 전환을 위해 같은 키에 단축키를 지정하세요: 시스템 설정 › 키보드 › 키보드 단축키… › 입력 소스 › “입력 메뉴에서 다음 소스 선택”에서 Caps Lock을 누르면 기록됩니다.";
-"Switch input source when tapped alone" = "단독 탭으로 입력 소스 전환";
-"A modifier pressed and released with nothing else in between switches the input source — to the next one, or to the one you pick per key; every shortcut using it keeps working. Watching for that lone tap is the one Keystone feature that observes keys, so it needs the Input Monitoring permission." = "다른 키 없이 수정자 키만 눌렀다 떼면 입력 소스가 전환됩니다 — 다음 소스로, 또는 키마다 지정한 소스로. 해당 키를 쓰는 단축키는 모두 그대로 동작합니다. 단독 탭을 지켜보는 것이 Keystone에서 유일하게 키를 관찰하는 기능이라, 입력 모니터링 권한이 필요합니다.";
-"Off" = "끔";
-"Next input source" = "다음 입력 소스";
-"%@ (not enabled)" = "%@ (비활성)";
-"Input Monitoring isn't granted yet — allow Keystone under Privacy & Security › Input Monitoring. The system prompt appears only on the first ask." = "아직 입력 모니터링이 허용되지 않았습니다 — 개인정보 보호 및 보안 › 입력 모니터링에서 Keystone을 허용해 주세요. 시스템 프롬프트는 처음 요청할 때 한 번만 나타납니다.";
+"Input Monitoring isn't granted yet — allow Keystone under Privacy & Security › Input Monitoring. The system prompt appears only on the first ask. Until then, keys that Keystone switches itself do nothing." = "아직 입력 모니터링이 허용되지 않았습니다 — 개인정보 보호 및 보안 › 입력 모니터링에서 Keystone을 허용해 주세요. 시스템 프롬프트는 처음 요청할 때 한 번만 나타납니다. 허용 전까지 Keystone이 직접 전환하는 키는 아무 일도 하지 않습니다.";
 "Open Privacy & Security Settings…" = "개인정보 보호 및 보안 설정 열기…";
+"Choosing an action" = "동작 고르기";
+"**System shortcut** lets macOS do the switching. It works everywhere and needs no permission. The other options let Keystone switch instead, which needs Input Monitoring and may not take effect right away in some places. Start with **System shortcut**, and use the others only when you need more." = "**시스템 단축키**는 macOS가 직접 전환하는 방식입니다. 어디서나 동작하고 권한도 필요 없습니다. 나머지 방식은 Keystone이 전환하며, 입력 모니터링 권한이 필요하고 일부 입력란에서는 바로 반영되지 않을 수 있습니다. 먼저 **시스템 단축키**를 쓰고, 그것으로 부족할 때만 다른 방식을 고르세요.";
+"Caps Lock" = "Caps Lock";
 "Left ⌘" = "왼쪽 ⌘";
 "Right ⌘" = "오른쪽 ⌘";
 "Left ⌥" = "왼쪽 ⌥";
 "Right ⌥" = "오른쪽 ⌥";
+"Action" = "동작";
+"Off" = "끔";
+"System shortcut" = "시스템 단축키";
+"System shortcut (used by %@)" = "시스템 단축키 (%@ 키가 사용 중)";
+"Next input source" = "다음 입력 소스";
+"Switch to input source" = "특정 입력 소스로 전환";
+"%@ (not enabled)" = "%@ (비활성)";
+"Switches" = "전환 시점";
+"On release, keeping shortcuts" = "뗄 때 (단축키 유지)";
+"Instantly, on press" = "누르는 즉시";
+"Destination key" = "대상 키";
+"Open Keyboard Settings…" = "키보드 설정 열기…";
+"Hold for real Caps Lock" = "길게 눌러 실제 Caps Lock";
+"Hold for about half a second to toggle real Caps Lock, LED and all. A quick tap still switches the input source. Needs the Input Monitoring permission." = "반 초쯤 길게 누르면 실제 Caps Lock이 켜지고 꺼집니다. LED도 그대로 동작합니다. 짧게 누르면 지금처럼 입력 소스가 전환됩니다. 입력 모니터링 권한이 필요합니다.";
+"Stock macOS behavior." = "macOS 기본 동작 그대로입니다.";
+"%1$@ acts as %2$@, and macOS does the switching. Works everywhere, including password fields." = "%1$@ 키가 %2$@ 키로 동작하고, 전환은 macOS가 합니다. 비밀번호 입력란을 포함해 어디서나 동작합니다.";
+"“Select next source in Input menu” is set to %@." = "“입력 메뉴에서 다음 소스 선택”이 %@ 키로 지정되어 있습니다.";
+"Under Keyboard Shortcuts… › Input Sources, set “Select next source in Input menu” by pressing %@." = "키보드 단축키… › 입력 소스에서 “입력 메뉴에서 다음 소스 선택”에 %@ 키를 눌러 지정하세요.";
+"%@ switches the instant it goes down and does nothing else: it is no longer a modifier, so shortcuts that use it stop working, and no other app sees the press. Needs the Input Monitoring permission, and does nothing while secure input is on, such as in password fields." = "%@ 키는 누르는 순간 전환되고 그 외에는 아무 일도 하지 않습니다. 더는 수정자 키가 아니므로 이 키를 쓰는 단축키는 동작하지 않고, 다른 앱에는 키 입력이 전달되지 않습니다. 입력 모니터링 권한이 필요하고, 비밀번호 필드처럼 보안 입력이 켜진 동안에는 아무 일도 하지 않습니다.";
+"Keystone switches the instant %@ goes down. The key does nothing else — no Caps Lock, no other app sees the press. Needs the Input Monitoring permission, and does nothing while secure input is on, such as in password fields." = "%@ 키를 누르는 순간 Keystone이 전환합니다. 키는 그 외에 아무 일도 하지 않습니다. Caps Lock도 걸리지 않고, 다른 앱에는 키 입력이 전달되지 않습니다. 입력 모니터링 권한이 필요하고, 비밀번호 필드처럼 보안 입력이 켜진 동안에는 아무 일도 하지 않습니다.";
+"%@ pressed and released with nothing else in between switches; every shortcut using it keeps working. Needs the Input Monitoring permission." = "다른 키 없이 %@ 키만 눌렀다 떼면 전환됩니다. 이 키를 쓰는 단축키는 모두 그대로 동작합니다. 입력 모니터링 권한이 필요합니다.";
 
 /* 온보딩 */
 "Welcome to Keystone" = "Keystone에 오신 것을 환영합니다";

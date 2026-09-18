@@ -14,15 +14,29 @@ import Foundation
    that.) Checking Resources first also spares `Bundle.module`'s own trap
    from ever being reachable in a bundled app. */
 private let localizationBundle: Bundle = {
+    let resources: Bundle
     if let url = Bundle.main.resourceURL?
         .appendingPathComponent("Keystone_Keystone.bundle"),
         let bundle = Bundle(url: url)
     {
-        return bundle
+        resources = bundle
+    } else {
+        /* `swift run` and Xcode builds: the generated accessor knows the
+           build-directory layout for the toolchain that made the binary. */
+        resources = .module
     }
-    /* `swift run` and Xcode builds: the generated accessor knows the
-       build-directory layout for the toolchain that made the binary. */
-    return .module
+    /* Development aid: `--language ko` forces one localization. A bare
+       `swift run` binary has no bundle identifier, so neither the
+       -AppleLanguages argument nor a per-app language setting reaches
+       it; pointing straight at the .lproj does. */
+    let arguments = CommandLine.arguments
+    if let index = arguments.firstIndex(of: "--language"), index + 1 < arguments.count,
+        let url = resources.url(forResource: arguments[index + 1], withExtension: "lproj"),
+        let forced = Bundle(url: url)
+    {
+        return forced
+    }
+    return resources
 }()
 
 func L(_ key: String) -> String {

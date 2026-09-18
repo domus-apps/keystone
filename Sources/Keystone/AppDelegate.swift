@@ -3,8 +3,13 @@ import AppKit
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem?
     private let engine = RemapEngine()
-    private let commandTapMonitor = CommandTapMonitor()
+    private let switchKeyMonitor = SwitchKeyMonitor()
+    private let physicalKeyMonitor = PhysicalKeyMonitor()
     private let holdForCapsMonitor = HoldForCapsMonitor()
+    /* True while Caps Lock is on the press path with hold-for-Caps-Lock
+       on: the hold monitor then has no tap of its own and is fed from
+       PhysicalKeyMonitor. */
+    private var holdFedByPhysicalKeys = false
     private let updater = UpdaterController()
     private var settingsWindowController: SettingsWindowController?
     private var onboardingController: OnboardingWindowController?
@@ -29,20 +34,28 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             showOnboarding()
         }
 
-        AppPreferences.migrateTapPreferencesIfNeeded()
-        commandTapMonitor.onTap = { key in
-            switch AppPreferences.tapActions[key] {
-            case .toggle: InputSourceSwitcher.toggle()
-            case .select(let sourceID): InputSourceSwitcher.select(id: sourceID)
-            case nil: break
+        AppPreferences.migrateIfNeeded()
+        switchKeyMonitor.onTap = { [weak self] key in
+            self?.perform(AppPreferences.bindings[key]?.action)
+        }
+        physicalKeyMonitor.onPress = { [weak self] key in
+            guard let self else { return }
+            /* Remember the source before switching away from it. */
+            if key == .capsLock, holdFedByPhysicalKeys {
+                holdForCapsMonitor.pressed()
             }
+            perform(AppPreferences.bindings[key]?.action)
+        }
+        physicalKeyMonitor.onRelease = { [weak self] key in
+            guard let self, key == .capsLock, holdFedByPhysicalKeys else { return }
+            holdForCapsMonitor.released()
         }
         syncMapping()
         engine.startWatching { [weak self] in
             /* A keyboard appeared or the machine woke: the mapping may have
                been dropped with the device — assert it again. */
             if AppPreferences.isRemapEnabled {
-                self?.engine.apply(AppPreferences.destination)
+                self?.engine.apply(AppPreferences.mappings)
             }
         }
         NotificationCenter.default.addObserver(
@@ -77,50 +90,83 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /* The remap is active exactly while Keystone runs: quitting hands the
-       keyboard back to stock macOS, so the app's presence is the whole
+    /* The remaps are active exactly while Keystone runs: quitting hands
+       the keyboard back to stock macOS, so the app's presence is the whole
        story a user has to reason about. (Launch at login keeps it
        seamless across restarts.) */
     func applicationWillTerminate(_ notification: Notification) {
         engine.clear()
     }
 
-    /* One place decides what the HID system, the event tap, and the menu
+    private func perform(_ action: AppPreferences.SwitchAction?) {
+        switch action {
+        case .toggle: InputSourceSwitcher.toggle()
+        case .select(let sourceID): InputSourceSwitcher.select(id: sourceID)
+        /* Native bindings are the system shortcut's business. */
+        case .native, nil: break
+        }
+    }
+
+    /* One place decides what the HID system, the monitors, and the menu
        should say, so the toggle, Settings, and the engine never drift. */
     private func syncMapping() {
-        let destination = AppPreferences.destination
-        if AppPreferences.isRemapEnabled {
-            engine.apply(destination)
-        } else {
-            engine.clear()
-        }
+        let enabled = AppPreferences.isRemapEnabled
+        let bindings = enabled ? AppPreferences.bindings : [:]
 
-        /* Modifier-tap switching is independent of the Caps Lock remap: it
-           never touches the HID mapping, only observes. */
-        let tapActions = AppPreferences.tapActions
-        if tapActions.isEmpty {
-            commandTapMonitor.stop()
+        /* Every rerouted key — native or Keystone-triggered — goes into the
+           one HID mapping list. */
+        engine.apply(enabled ? AppPreferences.mappings : [])
+
+        /* Two monitors serve the Keystone-path bindings: the event tap for
+           modifiers that switch on a lone release, the HID monitor for keys
+           rerouted to nothing that switch the instant they physically go
+           down. */
+        var releaseKeys: Set<KeyRemap.Key> = []
+        var pressKeys: Set<KeyRemap.Key> = []
+        for (key, binding) in bindings where binding.usesEventTap {
+            switch binding.trigger {
+            case .release: releaseKeys.insert(key)
+            case .press: pressKeys.insert(key)
+            case .remap: break
+            }
+        }
+        if releaseKeys.isEmpty {
+            switchKeyMonitor.stop()
         } else {
-            commandTapMonitor.watched = Set(tapActions.keys)
-            if !commandTapMonitor.start() {
+            switchKeyMonitor.releaseKeys = releaseKeys
+            if !switchKeyMonitor.start() {
                 NSLog("Keystone: event tap unavailable (Input Monitoring not granted?)")
             }
         }
+        if pressKeys.isEmpty {
+            physicalKeyMonitor.stop()
+        } else {
+            physicalKeyMonitor.watched = pressKeys
+            if !physicalKeyMonitor.start() {
+                NSLog("Keystone: HID monitor unavailable (Input Monitoring not granted?)")
+            }
+        }
 
-        /* Hold-for-Caps-Lock only observes the remapped key: taps stay
-           key-down instant; a hold toggles the real Caps Lock and hops the
-           input source back to where the press started. */
-        if AppPreferences.isRemapEnabled, AppPreferences.isHoldForCapsLockEnabled {
+        /* Hold-for-Caps-Lock only observes the rerouted Caps Lock: taps
+           stay key-down instant; a hold toggles the real Caps Lock and hops
+           the input source back to where the press started. On the native
+           path it watches the function key with its own tap; on the press
+           path the key produces no event, so PhysicalKeyMonitor feeds it. */
+        holdFedByPhysicalKeys = false
+        switch (AppPreferences.isHoldForCapsLockEnabled, bindings[.capsLock]?.trigger) {
+        case (true, .remap(let destination)):
             holdForCapsMonitor.keyCode = destination.keyCode
             if !holdForCapsMonitor.start() {
                 NSLog("Keystone: hold-for-Caps-Lock tap unavailable (Input Monitoring not granted?)")
             }
-        } else {
+        case (true, .press):
+            holdForCapsMonitor.stop()
+            holdFedByPhysicalKeys = true
+        default:
             holdForCapsMonitor.stop()
         }
 
-        toggleItem?.state = AppPreferences.isRemapEnabled ? .on : .off
-        toggleItem?.title = L("Remap Caps Lock to %@", destination.title)
+        toggleItem?.state = enabled ? .on : .off
     }
 
     private func showOnboarding() {
@@ -260,10 +306,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let policy: NSApplication.ActivationPolicy = wantsDock ? .regular : .accessory
         guard NSApp.activationPolicy() != policy else { return }
         NSApp.setActivationPolicy(policy)
-        /* Flipping the policy can drop activation; keep Settings in front. */
-        if isSettingsWindowVisible {
+        /* Flipping the policy can drop activation; keep Settings in front.
+           Going back to accessory has to wait: macOS 27.2 (measured
+           2026-09-18) leaves the window undraggable by its title bar until
+           the app goes through a real activation, and the deactivation the
+           flip causes lands asynchronously — re-activating right away (even
+           on the next run-loop turn or on didResignActive, ~10 ms) is a
+           no-op that leaves the window stuck; 50 ms was borderline, 0.2 s
+           and up always worked. Going to regular has no such problem. */
+        guard isSettingsWindowVisible else { return }
+        if policy == .regular {
             NSApp.activate(ignoringOtherApps: true)
             settingsWindowController?.window?.makeKeyAndOrderFront(nil)
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+                guard let self, isSettingsWindowVisible else { return }
+                NSApp.activate(ignoringOtherApps: true)
+                settingsWindowController?.window?.makeKeyAndOrderFront(nil)
+            }
         }
     }
 
@@ -284,7 +344,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menu.addItem(about)
         menu.addItem(.separator())
         let toggle = NSMenuItem(
-            title: L("Remap Caps Lock"), action: #selector(toggleRemap), keyEquivalent: "")
+            title: L("Remap Keys"), action: #selector(toggleRemap), keyEquivalent: "")
         toggle.target = self
         menu.addItem(toggle)
         toggleItem = toggle

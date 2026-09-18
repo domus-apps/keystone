@@ -4,6 +4,22 @@ All notable changes to Keystone are documented here. The release workflow publis
 
 Keep each bullet on a single line: release notes render line breaks literally (both on GitHub and in the update dialog), so wrapped lines would break mid-sentence.
 
+## 1.6.0
+
+### Added
+
+- Each ⌘ and ⌥ key that switches input sources can now switch the instant it is pressed, instead of when it is released. Choose it per key under Settings › Remapping › Switches. A key set this way stops working as a modifier and no other app sees the press, so keep the release option for keys whose shortcuts you use.
+- Caps Lock can now jump to one specific input source, or switch through Keystone instead of the system shortcut, the same way the ⌘ and ⌥ keys can.
+
+### Changed
+
+- Settings › Remapping now has one section per key, with only the controls that key's choice calls for.
+- The menu bar toggle now turns all remapping on and off, not only Caps Lock.
+
+### Fixed
+
+- The Settings window could no longer be dragged after a switch in it was flipped.
+
 ## 1.5.4
 
 ### Fixed

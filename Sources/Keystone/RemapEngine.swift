@@ -1,9 +1,9 @@
 import AppKit
 import IOKit
 
-/* Books the mapping into the HID event system by driving /usr/bin/hidutil —
+/* Books the mappings into the HID event system by driving /usr/bin/hidutil —
    Apple's own tool, so there is no private API to break and no permission
-   to request. Once set, the kernel rewrites Caps Lock on its own; this
+   to request. Once set, the kernel rewrites the keys on its own; this
    process sits idle.
 
    The mapping persists until reboot but not always through a keyboard
@@ -18,14 +18,16 @@ final class RemapEngine {
     private var notifyPort: IONotificationPortRef?
     private var matchedIterator: io_iterator_t = 0
 
-    func apply(_ key: KeyRemap.FunctionKey) {
+    /// Installs exactly `mappings` (an empty list clears).
+    func apply(_ mappings: [KeyRemap.Mapping]) {
         /* Sweep everything first: 1.0.0 (and hand-run hidutil) installed
            the mapping on every HID service, media-key translators included;
            the unscoped clear removes those leftovers on upgrade before the
            properly scoped mapping goes in. Cheap and idempotent, so it's
            safe to repeat on every re-assert. */
         run(KeyRemap.clearArgument, matching: nil)
-        run(KeyRemap.mappingArgument(to: key), matching: KeyRemap.keyboardMatchingArgument)
+        guard !mappings.isEmpty else { return }
+        run(KeyRemap.mappingArgument(mappings), matching: KeyRemap.keyboardMatchingArgument)
     }
 
     func clear() {

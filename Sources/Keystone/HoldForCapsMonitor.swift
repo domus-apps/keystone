@@ -5,8 +5,9 @@ import IOKit.hidsystem
 
 /* Opt-in "hold for real Caps Lock", built to keep the tap's zero delay:
    the remapped key's events pass through untouched, so a quick tap still
-   switches the instant it goes down (via the System Settings shortcut,
-   exactly as without this feature). The monitor only OBSERVES: on key-down
+   switches the instant it goes down (via the System Settings shortcut or
+   Keystone's own tap, exactly as without this feature). The monitor only
+   OBSERVES: on key-down
    it remembers the input source the press started on; if the key is still
    down half a second later, it toggles the system Caps Lock state (LED
    and all, via IOHIDSetModifierLockState) and hops the input source back
@@ -27,8 +28,9 @@ final class HoldForCapsMonitor {
     private var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
     private var pendingHold: DispatchWorkItem?
-    /// The source the press started on, captured before the system
-    /// shortcut (which runs after this head-inserted tap) switches away.
+    /// The source the press started on, captured before the switch
+    /// (the system shortcut, or SwitchKeyMonitor — both run after this
+    /// head-inserted tap) moves away.
     private var sourceAtPress: String?
     /// The Caps Lock state applied at the hold threshold, re-applied just
     /// after key-up: the pressing keyboard's driver ignores state written
@@ -131,78 +133,91 @@ final class HoldForCapsMonitor {
                 guard event.getIntegerValueField(.keyboardEventAutorepeat) == 0 else {
                     return
                 }
-                sourceAtPress = Self.currentSourceID()
-                capsTarget = nil
-                let work = DispatchWorkItem { [weak self] in
-                    guard let self else { return }
-                    /* LED only at the threshold: writing the STATE while
-                       the key is down is rejected by the pressing
-                       keyboard's driver AND makes it stomp the LED — the
-                       engage-flicker. State lands at key-up instead. */
-                    let target = CapsLockState.targetForToggle()
-                    self.capsTarget = target
-                    self.capsEngaged = target
-                    CapsLockState.setLEDs(target)
-                    let timer = Timer(timeInterval: 0.06, repeats: true) { _ in
-                        CapsLockState.setLEDs(target)
-                    }
-                    RunLoop.main.add(timer, forMode: .common)
-                    self.ledRefresh = timer
-                    /* Undo the switch the key-down performed: back to the
-                       language the hold started on. */
-                    if let source = self.sourceAtPress {
-                        InputSourceSwitcher.select(id: source)
-                    }
-                }
-                pendingHold = work
-                DispatchQueue.main.asyncAfter(
-                    deadline: .now() + Self.holdThreshold, execute: work)
+                pressed()
             } else {
-                pendingHold?.cancel()
-                pendingHold = nil
-                sourceAtPress = nil
-                ledRefresh?.invalidate()
-                ledRefresh = nil
-                if let target = capsTarget {
-                    capsTarget = nil
-                    /* A beat after the release, so the write lands once the
-                       driver has finished its own key-up bookkeeping. */
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        CapsLockState.apply(target)
-                    }
-                } else if capsEngaged {
-                    /* A tap while engaged: the input-source switch it
-                       triggered knocks caps off the tapped keyboard, so
-                       put everything back — immediately, and twice more,
-                       because the just-released keyboard's driver rejects
-                       writes for a beat after the key transaction. The
-                       first shot that lands closes the lowercase gap.
-                       (Async: apply spawns hidutil, too slow for a tap
-                       callback.) */
-                    DispatchQueue.main.async { CapsLockState.apply(true) }
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                        [weak self] in
-                        guard let self, self.capsEngaged else { return }
-                        CapsLockState.apply(true)
-                    }
-                    /* Last shot doubles as the disengage check: caps gone
-                       everywhere despite the re-asserts means some other
-                       hand turned it off — accept that instead of
-                       fighting the user. */
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
-                        [weak self] in
-                        guard let self, self.capsEngaged else { return }
-                        if CapsLockState.targetForToggle() {
-                            self.capsEngaged = false
-                        } else {
-                            CapsLockState.apply(true)
-                        }
-                    }
-                }
+                released()
             }
 
         default:
             break
+        }
+    }
+
+    /// The key went down. Call BEFORE whatever switches the input source
+    /// runs, so the source the press started on is the one remembered.
+    /// The tap path calls this itself (head-inserted, so ahead of the
+    /// system shortcut); the press path is fed from PhysicalKeyMonitor.
+    func pressed() {
+        sourceAtPress = Self.currentSourceID()
+        capsTarget = nil
+        let work = DispatchWorkItem { [weak self] in
+            guard let self else { return }
+            /* LED only at the threshold: writing the STATE while
+               the key is down is rejected by the pressing
+               keyboard's driver AND makes it stomp the LED — the
+               engage-flicker. State lands at key-up instead. */
+            let target = CapsLockState.targetForToggle()
+            self.capsTarget = target
+            self.capsEngaged = target
+            CapsLockState.setLEDs(target)
+            let timer = Timer(timeInterval: 0.06, repeats: true) { _ in
+                CapsLockState.setLEDs(target)
+            }
+            RunLoop.main.add(timer, forMode: .common)
+            self.ledRefresh = timer
+            /* Undo the switch the key-down performed: back to the
+               language the hold started on. */
+            if let source = self.sourceAtPress {
+                InputSourceSwitcher.select(id: source)
+            }
+        }
+        pendingHold = work
+        DispatchQueue.main.asyncAfter(
+            deadline: .now() + Self.holdThreshold, execute: work)
+    }
+
+    /// The key came up.
+    func released() {
+        pendingHold?.cancel()
+        pendingHold = nil
+        sourceAtPress = nil
+        ledRefresh?.invalidate()
+        ledRefresh = nil
+        if let target = capsTarget {
+            capsTarget = nil
+            /* A beat after the release, so the write lands once the
+               driver has finished its own key-up bookkeeping. */
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                CapsLockState.apply(target)
+            }
+        } else if capsEngaged {
+            /* A tap while engaged: the input-source switch it
+               triggered knocks caps off the tapped keyboard, so
+               put everything back — immediately, and twice more,
+               because the just-released keyboard's driver rejects
+               writes for a beat after the key transaction. The
+               first shot that lands closes the lowercase gap.
+               (Async: apply spawns hidutil, too slow for a tap
+               callback.) */
+            DispatchQueue.main.async { CapsLockState.apply(true) }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                [weak self] in
+                guard let self, self.capsEngaged else { return }
+                CapsLockState.apply(true)
+            }
+            /* Last shot doubles as the disengage check: caps gone
+               everywhere despite the re-asserts means some other
+               hand turned it off — accept that instead of
+               fighting the user. */
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.12) {
+                [weak self] in
+                guard let self, self.capsEngaged else { return }
+                if CapsLockState.targetForToggle() {
+                    self.capsEngaged = false
+                } else {
+                    CapsLockState.apply(true)
+                }
+            }
         }
     }
 

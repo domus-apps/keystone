@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 import ServiceManagement
 import SwiftUI
 
@@ -32,7 +33,7 @@ final class SettingsWindowController: NSWindowController {
 
     init(updater: UpdaterController) {
         splitViewController = SettingsSplitViewController(updater: updater)
-        let window = NSWindow(contentViewController: splitViewController)
+        let window = SettingsWindow(contentViewController: splitViewController)
         window.styleMask = [.titled, .closable, .miniaturizable, .fullSizeContentView]
         /* A toolbar (even an empty one) is required for the full-height
            sidebar look. The tall unified style centers the traffic lights
@@ -46,7 +47,7 @@ final class SettingsWindowController: NSWindowController {
         toolbar.displayMode = .iconOnly
         window.toolbar = toolbar
         window.isReleasedWhenClosed = false
-        window.setContentSize(NSSize(width: 640, height: 440))
+        window.setContentSize(NSSize(width: 640, height: 560))
         window.center()
 
         super.init(window: window)
@@ -59,6 +60,27 @@ final class SettingsWindowController: NSWindowController {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) is not supported")
+    }
+}
+
+/* macOS 27.2 (26B5086k, measured 2026-09-18): clicking a SwiftUI switch
+   Toggle in this window twice leaves the window undraggable by its title bar
+   until the app relaunches. `isMovable` still reads true and the app still
+   receives the title-bar mouse events; the window server just stops moving
+   the window. It is the hosted NSSwitch (SwiftUI's Toggle, or any NSSwitch
+   inside an NSHostingView) — a bare AppKit NSSwitch and a checkbox Toggle
+   are fine. Re-asserting `isMovable` resyncs whatever the window server
+   dropped, and it has to happen before the drag's mouse-down (the server
+   decides at that moment; resetting inside the mouse-down is too late), so
+   every click in the window ends with a reset. The setter is cheap, and a
+   no-op when nothing is wrong. Verified 6/6 against a deterministic repro. */
+final class SettingsWindow: NSWindow {
+    override func sendEvent(_ event: NSEvent) {
+        super.sendEvent(event)
+        if event.type == .leftMouseUp, isMovable {
+            isMovable = false
+            isMovable = true
+        }
     }
 }
 
@@ -262,6 +284,10 @@ final class SettingsSidebarViewController: NSViewController, NSTableViewDataSour
 final class SettingsModel: ObservableObject {
     let updater: UpdaterController
     @Published private(set) var enabledSources: [InputSourceSwitcher.Source] = []
+    /* The keycode "Select next source in Input menu" is bound to, if any:
+       what tells the native path's section whether the user has done the
+       one step in Keyboard Settings. */
+    @Published private(set) var nextSourceKeyCode: Int64?
 
     init(updater: UpdaterController) {
         self.updater = updater
@@ -303,6 +329,7 @@ final class SettingsModel: ObservableObject {
        behind our back; panes refresh it on every appearance. */
     func refreshSources() {
         enabledSources = InputSourceSwitcher.enabledSources()
+        nextSourceKeyCode = SystemHotkeys.nextSourceKeyCode()
     }
 
     func binding<Value>(
@@ -371,22 +398,160 @@ struct RemapSettingsView: View {
         Form {
             Section {
                 Toggle(
-                    L("Remap Caps Lock"),
+                    L("Remap Keys"),
                     isOn: model.binding(
                         { AppPreferences.isRemapEnabled },
                         { AppPreferences.isRemapEnabled = $0 }))
-                Picker(
-                    L("Destination key"),
-                    selection: model.binding(
-                        { AppPreferences.destination },
-                        { AppPreferences.destination = $0 })
-                ) {
-                    ForEach(KeyRemap.FunctionKey.allCases, id: \.self) { key in
-                        Text(key.title).tag(key)
+
+                if AppPreferences.needsInputMonitoring || AppPreferences.isHoldForCapsLockEnabled,
+                    !SwitchKeyMonitor.hasPermission
+                {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(L(
+                            "Input Monitoring isn't granted yet — allow Keystone under "
+                                + "Privacy & Security › Input Monitoring. The system prompt "
+                                + "appears only on the first ask. Until then, keys that "
+                                + "Keystone switches itself do nothing."
+                        ))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        Button(L("Open Privacy & Security Settings…")) {
+                            openSettingsURL("com.apple.preference.security?Privacy_ListenEvent")
+                        }
                     }
                 }
-                .disabled(!AppPreferences.isRemapEnabled)
+            }
 
+            /* Plain-language guide to the two paths, for people who will
+               never read the code comments: what each one is, what it costs,
+               and which to start with. Its own section, so it reads as
+               advice about the Action pickers below rather than as a
+               description of the switch above. */
+            Section(L("Choosing an action")) {
+                /* Markdown, so the mode name can be bold: the string is a
+                   whole paragraph, and the emphasis has to survive
+                   translation, so it lives in the string itself. */
+                Text(markdown(L(
+                    "**System shortcut** lets macOS do the switching. It works everywhere "
+                        + "and needs no permission. The other options let Keystone switch "
+                        + "instead, which needs Input Monitoring and may not take effect "
+                        + "right away in some places. Start with **System shortcut**, and "
+                        + "use the others only when you need more.")))
+                .foregroundStyle(.secondary)
+            }
+
+            ForEach(KeyRemap.Key.allCases, id: \.self) { key in
+                keySection(key)
+                    .disabled(!AppPreferences.isRemapEnabled)
+            }
+        }
+        .formStyle(.grouped)
+        .onAppear {
+            model.refreshSources()
+        }
+        /* Coming back from System Settings, where both the source list and
+           the shortcut are edited. */
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            model.refreshSources()
+        }
+    }
+
+    /* One section per key: the action, then only the controls that action
+       calls for — the trigger choice (modifiers switched by Keystone), the
+       destination key (anything rerouted), the Keyboard Settings shortcut
+       (native). The footer explains the chosen path in the key's own
+       terms. */
+    @ViewBuilder
+    private func keySection(_ key: KeyRemap.Key) -> some View {
+        let binding = AppPreferences.bindings[key]
+        /* The system has one "next source" shortcut, so one key holds the
+           native path at a time. Rather than letting a second key take it
+           away silently, the option is greyed out and names the holder. */
+        /* The key, other than this one, that holds the system shortcut. */
+        let nativeHolder = AppPreferences.nativeKey.flatMap { $0 == key ? nil : $0 }
+        /* "Next input source" opens up only once some OTHER key carries the
+           system shortcut: it does the same job less reliably, so everyone
+           gets the reliable path first. (A key can't trade its own system
+           shortcut for it, since that would leave none.) Jumping to a
+           specific source is a different job and is always offered. */
+        let nextSourceLocked = nativeHolder == nil
+        Section {
+            Picker(L("Action"), selection: actionBinding(for: key)) {
+                Text(L("Off")).tag("off")
+                Divider()
+                Text(
+                    nativeHolder.map { L("System shortcut (used by %@)", $0.title) }
+                        ?? L("System shortcut")
+                )
+                .tag(AppPreferences.SwitchAction.native.stored)
+                .selectionDisabled(nativeHolder != nil)
+                Text(L("Next input source"))
+                    .tag(AppPreferences.SwitchAction.toggle.stored)
+                    .selectionDisabled(nextSourceLocked)
+                /* The specific sources under their own heading, so the
+                   menu reads as "cycle" versus "jump to this one". */
+                Section(L("Switch to input source")) {
+                    ForEach(model.enabledSources, id: \.id) { source in
+                        Text(source.name)
+                            .tag(AppPreferences.SwitchAction.select(sourceID: source.id).stored)
+                    }
+                    /* A mapping to a source that's no longer enabled stays
+                       visible (and inert) instead of silently vanishing. */
+                    if case .select(let sourceID) = binding?.action,
+                        !model.enabledSources.contains(where: { $0.id == sourceID })
+                    {
+                        Text(L("%@ (not enabled)", sourceID))
+                            .tag(AppPreferences.SwitchAction.select(sourceID: sourceID).stored)
+                    }
+                }
+            }
+
+            if let binding {
+                if key.isModifier, binding.usesEventTap {
+                    Picker(L("Switches"), selection: triggerBinding(for: key)) {
+                        Text(L("On release, keeping shortcuts")).tag("release")
+                        Text(L("Instantly, on press")).tag("press")
+                    }
+                }
+
+                if binding.action == .native {
+                    /* Only the native path has a function key: the system
+                       shortcut needs a real key to be bound to. */
+                    let taken = AppPreferences.takenFunctionKeys(excluding: key)
+                    Picker(L("Destination key"), selection: destinationBinding(for: key)) {
+                        ForEach(KeyRemap.FunctionKey.allCases.filter { !taken.contains($0) }, id: \.self) {
+                            Text($0.title).tag($0)
+                        }
+                    }
+                }
+
+                if binding.action == .native {
+                    /* Whether the system shortcut already points at this
+                       key's function key; once it does, the button has
+                       nothing left to do. */
+                    let isBound =
+                        binding.destination.map { $0.keyCode == model.nextSourceKeyCode } ?? false
+                    VStack(alignment: .leading, spacing: 3) {
+                        Button(L("Open Keyboard Settings…")) {
+                            openSettingsURL("com.apple.Keyboard-Settings.extension")
+                        }
+                        .disabled(isBound)
+                        /* The one step the button leads to, right where the
+                           button is — or the fact that it's done. */
+                        Text(
+                            isBound
+                                ? L("“Select next source in Input menu” is set to %@.", key.title)
+                                : L(
+                                    "Under Keyboard Shortcuts… › Input Sources, set “Select next "
+                                        + "source in Input menu” by pressing %@.",
+                                    key.title))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    }
+                }
+            }
+
+            if key == .capsLock {
                 VStack(alignment: .leading, spacing: 3) {
                     Toggle(
                         L("Hold for real Caps Lock"),
@@ -398,130 +563,111 @@ struct RemapSettingsView: View {
                                     HoldForCapsMonitor.requestPermission()
                                 }
                             }))
-                    .disabled(!AppPreferences.isRemapEnabled)
+                    .disabled(binding == nil)
                     Text(L(
-                        "Hold the key for about half a second to toggle actual Caps "
-                            + "Lock — uppercase, keyboard LED and all, just like the key "
-                            + "used to. Quick taps keep switching the instant you press, "
-                            + "exactly as before. A hold switches at first too, then hops "
-                            + "back to the language the press started on as Caps Lock "
-                            + "engages — a brief flicker of the input menu is the only "
-                            + "trace."
+                        "Hold for about half a second to toggle real Caps Lock, LED and "
+                            + "all. A quick tap still switches the input source. Needs the "
+                            + "Input Monitoring permission."
                     ))
                     .font(.caption)
                     .foregroundStyle(.secondary)
                 }
-
-                if AppPreferences.isHoldForCapsLockEnabled,
-                    !HoldForCapsMonitor.hasPermission
-                {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(L(
-                            "Watching for the hold needs the Input Monitoring "
-                                + "permission — the same one the lone-tap switches below "
-                                + "use. Until it's granted, switching keeps working as "
-                                + "usual and holding does nothing."
-                        ))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        Button(L("Open Privacy & Security Settings…")) {
-                            openSettingsURL(
-                                "com.apple.preference.security?Privacy_ListenEvent")
-                        }
-                    }
-                }
-            } header: {
-                Text(L("Caps Lock"))
-            } footer: {
-                Text(L(
-                    "The remap lives in macOS's HID system — instant, and no process "
-                        + "touches your keystrokes. Turning it off, or quitting Keystone, "
-                        + "restores stock Caps Lock immediately."))
             }
-
-            Section {
-                Button(L("Open Keyboard Settings…")) {
-                    openSettingsURL("com.apple.Keyboard-Settings.extension")
-                }
-            } header: {
-                Text(L("Input source shortcut"))
-            } footer: {
-                Text(L(
-                    "For delay-free input switching, bind the shortcut to the same key: "
-                        + "System Settings › Keyboard › Keyboard Shortcuts… › Input "
-                        + "Sources › “Select next source in Input menu”, then press "
-                        + "Caps Lock to record it."))
-            }
-
-            Section {
-                ForEach(AppPreferences.TapKey.allCases, id: \.self) { key in
-                    Picker(key.title, selection: tapBinding(for: key)) {
-                        Text(L("Off")).tag("off")
-                        Text(L("Next input source")).tag(AppPreferences.TapAction.toggle.stored)
-                        Divider()
-                        ForEach(model.enabledSources, id: \.id) { source in
-                            Text(source.name)
-                                .tag(AppPreferences.TapAction.select(sourceID: source.id).stored)
-                        }
-                        /* A mapping to a source that's no longer enabled
-                           stays visible (and inert) instead of silently
-                           vanishing. */
-                        if case .select(let sourceID) = AppPreferences.tapActions[key],
-                            !model.enabledSources.contains(where: { $0.id == sourceID })
-                        {
-                            Text(L("%@ (not enabled)", sourceID))
-                                .tag(AppPreferences.TapAction.select(sourceID: sourceID).stored)
-                        }
-                    }
-                }
-
-                if !AppPreferences.tapActions.isEmpty, !CommandTapMonitor.hasPermission {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(L(
-                            "Input Monitoring isn't granted yet — allow Keystone under "
-                                + "Privacy & Security › Input Monitoring. The system prompt "
-                                + "appears only on the first ask."
-                        ))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        Button(L("Open Privacy & Security Settings…")) {
-                            openSettingsURL("com.apple.preference.security?Privacy_ListenEvent")
-                        }
-                    }
-                }
-            } header: {
-                Text(L("Switch input source when tapped alone"))
-            } footer: {
-                Text(L(
-                    "A modifier pressed and released with nothing else in between "
-                        + "switches the input source — to the next one, or to the one you "
-                        + "pick per key; every shortcut using it keeps working. Watching "
-                        + "for that lone tap is the one Keystone feature that observes "
-                        + "keys, so it needs the Input Monitoring permission."))
-            }
-        }
-        .formStyle(.grouped)
-        .onAppear {
-            model.refreshSources()
+        } header: {
+            Text(key.title)
+        } footer: {
+            Text(footer(for: key, binding: binding))
         }
     }
 
-    /* Picker selection rides the stored string form: "off", "toggle", or
-       "select:<id>" — Hashable for free, one source of truth. */
-    private func tapBinding(for key: AppPreferences.TapKey) -> Binding<String> {
+    private func footer(for key: KeyRemap.Key, binding: AppPreferences.KeyBinding?) -> String {
+        guard let binding else {
+            return L("Stock macOS behavior.")
+        }
+        let destination = binding.destination?.title ?? ""
+        switch (binding.action, binding.trigger) {
+        case (.native, _):
+            return L(
+                "%1$@ acts as %2$@, and macOS does the switching. Works everywhere, "
+                    + "including password fields.",
+                key.title, destination)
+        case (_, .press) where key.isModifier:
+            return L(
+                "%@ switches the instant it goes down and does nothing else: it is no "
+                    + "longer a modifier, so shortcuts that use it stop working, and no "
+                    + "other app sees the press. Needs the Input Monitoring permission, and "
+                    + "does nothing while secure input is on, such as in password fields.",
+                key.title)
+        case (_, .press), (_, .remap):
+            return L(
+                "Keystone switches the instant %@ goes down. The key does nothing else — "
+                    + "no Caps Lock, no other app sees the press. Needs the Input Monitoring "
+                    + "permission, and does nothing while secure input is on, such as in "
+                    + "password fields.",
+                key.title)
+        case (_, .release):
+            return L(
+                "%@ pressed and released with nothing else in between switches; every "
+                    + "shortcut using it keeps working. Needs the Input Monitoring "
+                    + "permission.",
+                key.title)
+        }
+    }
+
+    /* Picker selections ride the stored string forms — Hashable for free,
+       one source of truth. A key switched on from Off starts on the safe
+       trigger: release for a modifier (its shortcuts survive), and
+       setBinding turns that into a rerouting for anything that must be
+       rerouted. */
+    private func actionBinding(for key: KeyRemap.Key) -> Binding<String> {
         model.binding(
-            { AppPreferences.tapActions[key]?.stored ?? "off" },
+            { AppPreferences.bindings[key]?.action.stored ?? "off" },
             { stored in
-                AppPreferences.setTapAction(
-                    AppPreferences.TapAction(stored: stored), for: key)
-                if !AppPreferences.tapActions.isEmpty, !CommandTapMonitor.hasPermission {
-                    CommandTapMonitor.requestPermission()
+                guard let action = AppPreferences.SwitchAction(stored: stored) else {
+                    AppPreferences.setBinding(nil, for: key)
+                    return
                 }
+                let trigger = AppPreferences.bindings[key]?.trigger ?? .release
+                AppPreferences.setBinding(
+                    AppPreferences.KeyBinding(action: action, trigger: trigger), for: key)
+                requestPermissionIfNeeded()
             })
+    }
+
+    private func triggerBinding(for key: KeyRemap.Key) -> Binding<String> {
+        model.binding(
+            { AppPreferences.bindings[key]?.trigger == .release ? "release" : "press" },
+            { stored in
+                guard var binding = AppPreferences.bindings[key] else { return }
+                binding.trigger = stored == "release" ? .release : .press
+                AppPreferences.setBinding(binding, for: key)
+            })
+    }
+
+    private func destinationBinding(for key: KeyRemap.Key) -> Binding<KeyRemap.FunctionKey> {
+        model.binding(
+            { AppPreferences.bindings[key]?.destination ?? .f19 },
+            { destination in
+                guard var binding = AppPreferences.bindings[key] else { return }
+                binding.trigger = .remap(destination)
+                AppPreferences.setBinding(binding, for: key)
+            })
+    }
+
+    private func requestPermissionIfNeeded() {
+        if AppPreferences.needsInputMonitoring, !SwitchKeyMonitor.hasPermission {
+            SwitchKeyMonitor.requestPermission()
+        }
     }
 
     private func openSettingsURL(_ suffix: String) {
         guard let url = URL(string: "x-apple.systempreferences:" + suffix) else { return }
         NSWorkspace.shared.open(url)
     }
+}
+
+/// Inline Markdown (bold, italics) for settings copy; falls back to the plain
+/// text if the string doesn't parse.
+private func markdown(_ string: String) -> AttributedString {
+    (try? AttributedString(markdown: string)) ?? AttributedString(string)
 }
