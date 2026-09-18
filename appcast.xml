@@ -425,5 +425,69 @@
         sparkle:edSignature="HaSyubWtbt9zaAduf74n+SQIvKQhV2j6zREdXP3n3AFC510EKelfCrMP/ozUWWm6DGPyhVPHASbdUBnRvUYaBA==" length="3005900"
         type="application/octet-stream"/>
     </item>
+    <item>
+      <title>Keystone v1.6.0</title>
+      <link>https://github.com/domus-apps/keystone/releases/tag/v1.6.0</link>
+      <pubDate>Fri, 18 Sep 2026 04:04:38 +0000</pubDate>
+      <description xml:lang="en"><![CDATA[
+<h2>1.6.0</h2>
+<h3>Added</h3>
+<ul>
+<li>Each ⌘ and ⌥ key that switches input sources can now switch the instant it is pressed, instead of when it is released. Choose it per key under Settings › Remapping › Switches. A key set this way stops working as a modifier and no other app sees the press, so keep the release option for keys whose shortcuts you use.</li>
+<li>Caps Lock can now jump to one specific input source, or switch through Keystone instead of the system shortcut, the same way the ⌘ and ⌥ keys can.</li>
+</ul>
+<h3>Changed</h3>
+<ul>
+<li>Settings › Remapping now has one section per key, with only the controls that key's choice calls for.</li>
+<li>The menu bar toggle now turns all remapping on and off, not only Caps Lock.</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>The Settings window could no longer be dragged after a switch in it was flipped.</li>
+</ul>
+<h2>1.5.4</h2>
+<h3>Fixed</h3>
+<ul>
+<li>The app icon's background looked flat in the Dock and Finder. It now shows its gradient.</li>
+</ul>
+<h2>1.5.3</h2>
+<h3>Fixed</h3>
+<ul>
+<li>Closing Settings or the welcome window now returns you to the app you were using, so other apps' shortcuts keep working right away.</li>
+</ul>      ]]></description>
+      <description xml:lang="ko"><![CDATA[
+<h2>1.6.0</h2>
+<h3>추가</h3>
+<ul>
+<li>입력 소스를 전환하는 ⌘·⌥ 키를 손을 뗄 때가 아니라 누르는 순간 전환되도록 설정할 수 있습니다. 설정 › 리맵의 "전환 시점"에서 키마다 고를 수 있습니다. 이렇게 설정한 키는 수정자 키로는 동작하지 않고 다른 앱에도 키 입력이 전달되지 않으니, 단축키에 쓰는 키는 "뗄 때"로 두면 됩니다.</li>
+<li>Caps Lock도 ⌘·⌥ 키처럼 특정 입력 소스로 바로 전환하거나, 시스템 단축키 대신 Keystone이 직접 전환하도록 설정할 수 있습니다.</li>
+</ul>
+<h3>변경</h3>
+<ul>
+<li>설정 › 리맵이 키별 섹션으로 나뉘어, 선택한 방식에 필요한 항목만 보입니다.</li>
+<li>메뉴 막대의 토글이 Caps Lock만이 아니라 모든 키 리맵을 함께 켜고 끕니다.</li>
+</ul>
+<h3>수정</h3>
+<ul>
+<li>설정 창의 스위치를 켜거나 끈 뒤 창을 끌어 옮길 수 없던 문제를 수정했습니다.</li>
+</ul>
+<h2>1.5.4</h2>
+<h3>수정</h3>
+<ul>
+<li>Dock과 Finder에서 앱 아이콘 배경이 평면으로 보이던 문제를 고쳤습니다.</li>
+</ul>
+<h2>1.5.3</h2>
+<h3>수정</h3>
+<ul>
+<li>설정 창이나 시작 안내 창을 닫으면 이전에 쓰던 앱으로 바로 돌아가, 다른 앱의 단축키가 곧바로 동작합니다.</li>
+</ul>      ]]></description>
+      <sparkle:version>19</sparkle:version>
+      <sparkle:shortVersionString>1.6.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/keystone/releases/download/v1.6.0/Keystone.zip"
+        sparkle:edSignature="gxQkf0dBifMs+mTJxdGKIFSmJ27wDymQmLy+/5iuDfegMscX9CJFEEDZsqJI9coVpPTa+se2IotW3kD8cOPuDQ==" length="3036063"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
