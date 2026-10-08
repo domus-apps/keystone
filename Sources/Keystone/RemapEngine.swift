@@ -1,5 +1,6 @@
 import AppKit
 import IOKit
+import IOKit.hid
 
 /* Books the mappings into the HID event system by driving /usr/bin/hidutil —
    Apple's own tool, so there is no private API to break and no permission
@@ -14,9 +15,9 @@ import IOKit
    a few milliseconds, so over-asserting is harmless. */
 final class RemapEngine {
     private var onDeviceChurn: (() -> Void)?
-    private var pendingReassert: DispatchWorkItem?
+    private var pendingReasserts: [DispatchWorkItem] = []
     private var notifyPort: IONotificationPortRef?
-    private var matchedIterator: io_iterator_t = 0
+    private var matchedIterators: [io_iterator_t] = []
 
     /// Installs exactly `mappings` (an empty list clears).
     func apply(_ mappings: [KeyRemap.Mapping]) {
@@ -73,34 +74,54 @@ final class RemapEngine {
         IONotificationPortSetDispatchQueue(port, .main)
         notifyPort = port
 
-        /* Any IOHIDDevice publication triggers a (debounced) re-assert;
-           filtering for keyboards specifically isn't worth the extra IOKit
-           plumbing when a spurious re-assert costs nothing. */
+        /* Any IOHIDDevice publication triggers a (debounced) re-assert, and
+           so does a keyboard event service: the service `hidutil
+           --matching` actually writes to (AppleHIDKeyboardEventDriverV2 and
+           kin, carrying the same PrimaryUsagePage/PrimaryUsage). It is a
+           separate driver that matches and registers underneath the device
+           afterwards, so re-asserting off the device alone could land before
+           it existed. The new keyboard then kept its stock Caps Lock until
+           something else re-synced (opening Settings did, by activating the
+           app). Spurious re-asserts cost nothing, so the device watch stays
+           as the broad net. */
+        let keyboards = IOServiceMatching("IOHIDEventService") as NSMutableDictionary
+        keyboards[kIOPropertyMatchKey] = [
+            kIOHIDPrimaryUsagePageKey: kHIDPage_GenericDesktop,
+            kIOHIDPrimaryUsageKey: kHIDUsage_GD_Keyboard,
+        ]
         let callback: IOServiceMatchingCallback = { context, iterator in
             guard let context else { return }
             let engine = Unmanaged<RemapEngine>.fromOpaque(context).takeUnretainedValue()
             RemapEngine.drain(iterator)
             engine.scheduleReassert()
         }
-        let result = IOServiceAddMatchingNotification(
-            port, kIOFirstMatchNotification, IOServiceMatching("IOHIDDevice"),
-            callback, Unmanaged.passUnretained(self).toOpaque(), &matchedIterator)
-        guard result == KERN_SUCCESS else {
-            NSLog("Keystone: HID matching notification failed (\(result))")
-            return
+        for matching in [IOServiceMatching("IOHIDDevice"), keyboards as CFDictionary] {
+            var iterator: io_iterator_t = 0
+            let result = IOServiceAddMatchingNotification(
+                port, kIOFirstMatchNotification, matching,
+                callback, Unmanaged.passUnretained(self).toOpaque(), &iterator)
+            guard result == KERN_SUCCESS else {
+                NSLog("Keystone: HID matching notification failed (\(result))")
+                continue
+            }
+            /* The notification only arms once the existing matches are
+               drained — and those are the already-present devices, which
+               need no action. */
+            Self.drain(iterator)
+            matchedIterators.append(iterator)
         }
-        /* The notification only arms once the existing matches are drained —
-           and those are the already-present devices, which need no action. */
-        Self.drain(matchedIterator)
     }
 
     /* Devices tend to publish in bursts (one keyboard is several HID
-       services); coalesce to one re-assert. */
+       services); coalesce to one re-assert, plus one more once things have
+       settled, for a service the HID event system picks up late. */
     private func scheduleReassert() {
-        pendingReassert?.cancel()
-        let work = DispatchWorkItem { [weak self] in self?.onDeviceChurn?() }
-        pendingReassert = work
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: work)
+        pendingReasserts.forEach { $0.cancel() }
+        pendingReasserts = [0.5, 3].map { delay in
+            let work = DispatchWorkItem { [weak self] in self?.onDeviceChurn?() }
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: work)
+            return work
+        }
     }
 
     private static func drain(_ iterator: io_iterator_t) {

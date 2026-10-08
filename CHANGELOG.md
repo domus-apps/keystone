@@ -4,6 +4,12 @@ All notable changes to Keystone are documented here. The release workflow publis
 
 Keep each bullet on a single line: release notes render line breaks literally (both on GitHub and in the update dialog), so wrapped lines would break mid-sentence.
 
+## 1.6.1
+
+### Fixed
+
+- A newly connected keyboard could fail to switch input sources until Settings was opened.
+
 ## 1.6.0
 
 ### Added
