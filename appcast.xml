@@ -625,5 +625,57 @@
         sparkle:edSignature="QZcfozYWIUzKXcYS+pUJVO8R8Fmp8vKbxlMc+03yMfmC+PypAztQ3TfhStun+s0vfsZ93rXdGUIj0hC0gub7Cg==" length="3041721"
         type="application/octet-stream"/>
     </item>
+    <item>
+      <title>Keystone v1.7.0</title>
+      <link>https://github.com/domus-apps/keystone/releases/tag/v1.7.0</link>
+      <pubDate>Fri, 06 Nov 2026 01:08:02 +0000</pubDate>
+      <description xml:lang="en"><![CDATA[
+<h2>1.7.0</h2>
+<h3>Added</h3>
+<ul>
+<li>You can open the Domus website in your language from the menu bar menu or Settings.</li>
+</ul>
+<h2>1.6.2</h2>
+<h3>Changed</h3>
+<ul>
+<li>Opening Keystone again while it's running, from Spotlight or the Applications folder, brings up Settings.</li>
+</ul>
+<h3>Fixed</h3>
+<ul>
+<li>With the menu bar icon hidden, opening Keystone when it wasn't running showed no window.</li>
+</ul>
+<h2>1.6.1</h2>
+<h3>Fixed</h3>
+<ul>
+<li>A newly connected keyboard could fail to switch input sources until Settings was opened.</li>
+</ul>      ]]></description>
+      <description xml:lang="ko"><![CDATA[
+<h2>1.7.0</h2>
+<h3>추가</h3>
+<ul>
+<li>메뉴 막대 메뉴나 설정에서 사용 중인 언어로 Domus 웹사이트를 열 수 있습니다.</li>
+</ul>
+<h2>1.6.2</h2>
+<h3>변경</h3>
+<ul>
+<li>실행 중인 Keystone을 Spotlight나 응용 프로그램 폴더에서 다시 열어 설정 창을 띄울 수 있습니다.</li>
+</ul>
+<h3>수정</h3>
+<ul>
+<li>메뉴 막대 아이콘을 숨긴 상태에서 꺼져 있던 Keystone을 열면 아무 창도 나타나지 않던 문제를 수정했습니다.</li>
+</ul>
+<h2>1.6.1</h2>
+<h3>수정</h3>
+<ul>
+<li>새로 연결한 키보드에서 설정 창을 한 번 열기 전까지 입력 소스가 전환되지 않던 문제를 수정했습니다.</li>
+</ul>      ]]></description>
+      <sparkle:version>22</sparkle:version>
+      <sparkle:shortVersionString>1.7.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>26.0</sparkle:minimumSystemVersion>
+      <enclosure
+        url="https://github.com/domus-apps/keystone/releases/download/v1.7.0/Keystone.zip"
+        sparkle:edSignature="0MMVxorMBzMKkGnpG8h9Aigtm2j/0+5blix4W/CnaIAsNQA9jsSxIs5Oj2sBruzz1f+WpG+mJF+V7FgZWW1/Bw==" length="3042721"
+        type="application/octet-stream"/>
+    </item>
   </channel>
 </rss>
